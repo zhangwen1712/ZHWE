@@ -42,3 +42,9 @@ ASTRO_TELEMETRY_DISABLED=1 npm run build
 构建会生成 `sitemap.xml` 和 `robots.txt`，并添加站点图标、网页清单、canonical 和多语言 alternate 标签。当前地址默认为 `https://zhwe-blog.pages.dev`；将来自定义域名启用后，应将构建环境变量 `SITE_URL` 设置为正式网站的 HTTPS 源地址（不含路径），重新构建并核查 sitemap 与 canonical。
 
 审核版页面仍带 `noindex,nofollow`。robots 允许抓取，是为了让搜索引擎能够读取该指令；建立 sitemap 不代表允许收录。正式收录策略应在网站所有者确认后调整。顶层及各语言的 404 页面由 Cloudflare Pages 在路径不存在时返回。
+
+## 地图与显示偏好
+
+`/map/` 及对应多语言路径展示文章中的城市级近似地点；数据维护在 `migration/article-locations.json`。标记来自明确文章内容或站长确认的到访地点，不能把歌曲、新闻提到的地点当作访问经历。未能判断的文章保留在 `unlocatedArticleIds` 中，不自动猜测。地图使用 Leaflet 与 OpenStreetMap 瓦片；访客点击计算距离并授权后，仅在浏览器中计算与深圳市中心的近似直线距离。
+
+页脚提供浅色、深色、随系统三个选项，并保留旧版手动主题偏好。语言优先使用用户在页面中选择并保存在浏览器的语言；未选择时匹配浏览器支持的语言，无法匹配时使用中文。明确访问某个语言路径时保留该路径。

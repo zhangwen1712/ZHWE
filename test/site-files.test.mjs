@@ -14,3 +14,7 @@ test('root and localized not-found pages and icons are present',async()=>{
  for(const file of ['404.html','fr/404.html','es/404.html','it/404.html','de/404.html','favicon.ico','favicon-32x32.png','apple-touch-icon.png','icon-192.png','icon-512.png','site.webmanifest'])assert.ok((await stat(new URL(`../dist/${file}`,import.meta.url))).size>0,file);
  const homepage=await read('index.html');assert.ok(homepage.includes('noindex,nofollow'));assert.ok(homepage.includes('rel="canonical"'));assert.ok(homepage.includes('rel="manifest"'));
 });
+test('map routes and the homepage card layout are generated',async()=>{
+ for(const file of ['map/index.html','fr/map/index.html','es/map/index.html','it/map/index.html','de/map/index.html'])assert.ok((await stat(new URL(`../dist/${file}`,import.meta.url))).size>0,file);
+ const homepage=await read('index.html');assert.ok(!homepage.includes('/wp-content/uploads/2024/09/2024-08-28-20-06-32.webp'));assert.ok(homepage.includes('post-card-no-image'));assert.ok(!homepage.includes('card-placeholder'));
+});

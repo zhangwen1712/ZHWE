@@ -10,7 +10,8 @@
     "build:pages": "npm run build && node scripts/prepare-pages.mjs"
   },
   "dependencies": {
-    "astro": "^7.4.13"
+    "astro": "^7.4.13",
+    "leaflet": "^1.9.4"
   },
   "devDependencies": {
     "cf": "^1.0.0-rc.2",

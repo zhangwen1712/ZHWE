@@ -1,0 +1,317 @@
+{
+  "method": "城市级近似位置；仅收录文章明确记载的本人行程。未写明地点的文章不推断。",
+  "locations": [
+    {
+      "id": "beijing",
+      "names": {
+        "zh": "北京",
+        "fr": "Pékin",
+        "es": "Pekín",
+        "it": "Pechino",
+        "de": "Peking"
+      },
+      "latitude": 39.9042,
+      "longitude": 116.4074,
+      "country": "CN",
+      "region": "beijing",
+      "articleIds": [
+        2880,
+        2833,
+        2613,
+        2256,
+        1986,
+        1971,
+        1727,
+        1441,
+        1278,
+        829,
+        732,
+        459,
+        447,
+        147,
+        37,
+        2205,
+        760,
+        430,
+        1143,
+        1695
+      ]
+    },
+    {
+      "id": "pingyao",
+      "names": {
+        "zh": "平遥",
+        "fr": "Pingyao",
+        "es": "Pingyao",
+        "it": "Pingyao",
+        "de": "Pingyao"
+      },
+      "latitude": 37.1899,
+      "longitude": 112.1753,
+      "country": "CN",
+      "region": "shanxi",
+      "articleIds": [
+        2981,
+        3044,
+        1110,
+        1072,
+        2219,
+        1275
+      ]
+    },
+    {
+      "id": "taian",
+      "names": {
+        "zh": "泰安·泰山",
+        "fr": "Tai’an · Mont Tai",
+        "es": "Tai’an · Monte Tai",
+        "it": "Tai’an · Monte Tai",
+        "de": "Tai’an · Tai Shan"
+      },
+      "latitude": 36.2003,
+      "longitude": 117.0876,
+      "country": "CN",
+      "region": "shandong",
+      "articleIds": [
+        2544
+      ]
+    },
+    {
+      "id": "tianjin",
+      "names": {
+        "zh": "天津",
+        "fr": "Tianjin",
+        "es": "Tianjin",
+        "it": "Tianjin",
+        "de": "Tianjin"
+      },
+      "latitude": 39.0842,
+      "longitude": 117.2009,
+      "country": "CN",
+      "region": "tianjin",
+      "articleIds": [
+        2285
+      ]
+    },
+    {
+      "id": "taiyuan",
+      "names": {
+        "zh": "太原",
+        "fr": "Taiyuan",
+        "es": "Taiyuan",
+        "it": "Taiyuan",
+        "de": "Taiyuan"
+      },
+      "latitude": 37.8706,
+      "longitude": 112.5489,
+      "country": "CN",
+      "region": "shanxi",
+      "articleIds": [
+        1942
+      ]
+    }
+  ],
+  "currentLocation": {
+    "latitude": 22.5431,
+    "longitude": 114.0579,
+    "names": {
+      "zh": "深圳",
+      "fr": "Shenzhen",
+      "es": "Shenzhen",
+      "it": "Shenzhen",
+      "de": "Shenzhen"
+    }
+  },
+  "visitedPlaces": [
+    {
+      "id": "yuncheng",
+      "names": {
+        "zh": "运城",
+        "fr": "Yuncheng",
+        "es": "Yuncheng",
+        "it": "Yuncheng",
+        "de": "Yuncheng"
+      },
+      "latitude": 35.0263,
+      "longitude": 111.0069
+    },
+    {
+      "id": "xian",
+      "names": {
+        "zh": "西安",
+        "fr": "Xi’an",
+        "es": "Xi’an",
+        "it": "Xi’an",
+        "de": "Xi’an"
+      },
+      "latitude": 34.3416,
+      "longitude": 108.9398
+    },
+    {
+      "id": "weihai",
+      "names": {
+        "zh": "威海",
+        "fr": "Weihai",
+        "es": "Weihai",
+        "it": "Weihai",
+        "de": "Weihai"
+      },
+      "latitude": 37.5135,
+      "longitude": 122.1204
+    },
+    {
+      "id": "yantai",
+      "names": {
+        "zh": "烟台",
+        "fr": "Yantai",
+        "es": "Yantai",
+        "it": "Yantai",
+        "de": "Yantai"
+      },
+      "latitude": 37.4638,
+      "longitude": 121.4479
+    },
+    {
+      "id": "qingdao",
+      "names": {
+        "zh": "青岛",
+        "fr": "Qingdao",
+        "es": "Qingdao",
+        "it": "Qingdao",
+        "de": "Qingdao"
+      },
+      "latitude": 36.0671,
+      "longitude": 120.3826
+    },
+    {
+      "id": "huizhou",
+      "names": {
+        "zh": "惠州",
+        "fr": "Huizhou",
+        "es": "Huizhou",
+        "it": "Huizhou",
+        "de": "Huizhou"
+      },
+      "latitude": 23.1115,
+      "longitude": 114.4152
+    },
+    {
+      "id": "guangzhou",
+      "names": {
+        "zh": "广州",
+        "fr": "Guangzhou",
+        "es": "Guangzhou",
+        "it": "Guangzhou",
+        "de": "Guangzhou"
+      },
+      "latitude": 23.1291,
+      "longitude": 113.2644
+    },
+    {
+      "id": "hongkong",
+      "names": {
+        "zh": "香港",
+        "fr": "Hong Kong",
+        "es": "Hong Kong",
+        "it": "Hong Kong",
+        "de": "Hong Kong"
+      },
+      "latitude": 22.3193,
+      "longitude": 114.1694
+    },
+    {
+      "id": "macau",
+      "names": {
+        "zh": "澳门",
+        "fr": "Macao",
+        "es": "Macao",
+        "it": "Macao",
+        "de": "Macao"
+      },
+      "latitude": 22.1987,
+      "longitude": 113.5439
+    },
+    {
+      "id": "bangkok",
+      "names": {
+        "zh": "曼谷",
+        "fr": "Bangkok",
+        "es": "Bangkok",
+        "it": "Bangkok",
+        "de": "Bangkok"
+      },
+      "latitude": 13.7563,
+      "longitude": 100.5018
+    },
+    {
+      "id": "phuket",
+      "names": {
+        "zh": "普吉",
+        "fr": "Phuket",
+        "es": "Phuket",
+        "it": "Phuket",
+        "de": "Phuket"
+      },
+      "latitude": 7.8804,
+      "longitude": 98.3923
+    }
+  ],
+  "unlocatedArticleIds": [
+    2917,
+    2912,
+    2897,
+    2853,
+    2845,
+    2841,
+    2821,
+    2800,
+    2785,
+    2754,
+    2742,
+    2725,
+    2697,
+    2719,
+    2670,
+    2653,
+    2643,
+    2619,
+    2583,
+    2469,
+    2594,
+    2462,
+    2275,
+    2270,
+    2245,
+    2153,
+    2139,
+    2128,
+    2126,
+    2063,
+    1768,
+    1709,
+    1703,
+    1720,
+    1678,
+    1669,
+    1657,
+    1647,
+    1632,
+    1619,
+    1599,
+    1350,
+    1262,
+    1327,
+    664,
+    595,
+    462,
+    437,
+    424,
+    411,
+    278,
+    230,
+    86,
+    84,
+    52,
+    2197
+  ]
+}
