@@ -1,11 +1,24 @@
-# ZHWE 迁移工作区
+# ZHWE
 
-本项目用于将 zhwe.top 从 WordPress 迁移至 GitHub 和 Cloudflare。
+ZHWE WordPress 迁移至 Astro 的进行中项目。当前是复刻初版，尚不能替代线上网站。
 
-## 当前状态
+## 本地运行
 
-`baseline/homepage.html` 是公开首页的原始 HTML 快照，用于复刻时对照。它仍引用原站资源和链接，不是独立的网站，也不能作为迁移完成的版本发布。
+```sh
+npm ci
+ASTRO_TELEMETRY_DISABLED=1 npm run dev
+ASTRO_TELEMETRY_DISABLED=1 npm run build
+```
 
-下一步：盘点公开页面与资源，构建 Astro 组件、转换已发布内容，并在桌面和移动端逐页对照。草稿、凭据和数据库备份不得提交至公开仓库。
+Astro 需要 Node.js 22.23.4 或更高版本；项目中的开发依赖提供本地 Node 运行时。构建输出为 `dist/`。
 
-`migration/published-posts.json` 包含从公开 WordPress API 读取的 85 篇已发布文章，作为迁移输入；正文仍需转换和校验。
+## 当前内容
+
+- 已发布文章、页面、分类及标签的公开数据在 `migration/`；不包含草稿。
+- 保留文章和页面路径，生成首页、文章、页面、分类、标签和分页。
+- `baseline/homepage.html` 是迁移前的公开首页快照，用于对照。
+- `public/assets/bloglo.css` 来自原站的 Bloglo 主题，`dynamic-styles.css` 为现站主题配置生成的样式。
+
+## 迁移未完成
+
+图片与部分字体、嵌入内容仍从原站加载；主题样式、导航、滚动文章、页脚、评论、搜索、特殊区块、SEO、移动端与交互尚未完整复刻和逐页验收。预览暂设 `noindex`。部署到正式域名前必须完成媒体迁移、功能与内容校验，核对链接、SEO、重定向，并建立回滚方案。请勿把此版本视为生产版本。

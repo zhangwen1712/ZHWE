@@ -1,0 +1,7 @@
+---
+import Base from '../layouts/Base.astro';
+import Card from '../components/Card.astro';
+import posts from '../../migration/published-posts.json';
+const featured=[['天津','/2024/08/18/天津/','https://zhwe.top/wp-content/uploads/2024/08/IMG_20240817_143615webp.webp'],['毕业','/2021/07/09/毕业/','https://zhwe.top/wp-content/uploads/2024/06/IMG_3341webpwebp-scaled.webp'],['威海','/2024/05/05/威海/','https://zhwe.top/wp-content/uploads/2024/05/KAIwebpwebp-scaled.webp']];
+---
+<Base><div class="ticker"><div class="bloglo-container"><strong>ZHWE</strong><a href={new URL(posts[0].link).pathname} set:html={posts[0].title.rendered}/></div></div><section class="featured bloglo-container"><h2>精选集</h2><div class="featured-grid">{featured.map(([name,link,image])=><a href={link} style={`background-image:url('${image}')`}><span>{name}</span></a>)}</div></section><main class="bloglo-container"><div class="posts-grid">{posts.slice(0,10).map(post=><Card post={post}/>)}</div><nav class="pagination"><a href="/page/2/">下一页 »</a></nav></main></Base>

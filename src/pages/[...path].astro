@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import Card from '../components/Card.astro';
+import posts from '../../migration/published-posts.json';
+import pages from '../../migration/published-pages.json';
+import categories from '../../migration/categories.json';
+import tags from '../../migration/tags.json';
+export { getStaticPaths } from '../routes.js';
+const {kind,item,term,page}=Astro.props;
+const selected=kind==='pagination'?posts.slice((page-1)*10,page*10):kind==='category'?posts.filter(p=>p.categories.includes(term.id)):kind==='tag'?posts.filter(p=>p.tags.includes(term.id)):[];
+const html=item?.content?.rendered?.replaceAll('https://zhwe.top/wp-content/','https://zhwe.top/wp-content/').replace(/https?:\/\/zhwe\.top\/(?!wp-content\/)/g,'/')||'';
+const hasNext = page && page !== Math.ceil(posts.length / 10);
+const title=item?.title?.rendered||term?.name||`文章 - 第 ${page} 页`;
+---
+<Base title={`${title} - ZHWE`}>
+  <main class="bloglo-container content-wrap">
+    {item && <article class="single-post">
+      <h1 set:html={title} />
+      {kind === 'post' && <p class="entry-meta">By 章文　{new Date(item.date).toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'})}</p>}
+      <div class="entry-content" set:html={html}></div>
+    </article>}
+    {!item && <section>
+      <h1 set:html={title} />
+      <div class="posts-grid">{selected.map(post => <Card post={post} />)}</div>
+      {kind === 'pagination' && <nav class="pagination">
+        <a href={page > 2 ? `/page/${page - 1}/` : '/'}>« 上一页</a>
+        {hasNext && <a href={`/page/${page + 1}/`}>下一页 »</a>}
+      </nav>}
+    </section>}
+  </main>
+</Base>
