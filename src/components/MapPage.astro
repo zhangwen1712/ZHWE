@@ -11,6 +11,7 @@ const copy={
  it:{title:'Mappa',visited:'Paesi e regioni visitati',country:'Cina · Thailandia',regions:'Taiyuan · Pingyao · Yuncheng · Xi’an · Pechino · Tianjin · Weihai · Yantai · Qingdao · Monte Tai · Shenzhen · Huizhou · Guangzhou · Lingnan · Hong Kong · Macao · Bangkok · Phuket',current:'Posizione dell’autore',locate:'Calcola la distanza',note:'Serve il permesso di localizzazione; il calcolo rimane nel browser.',result:'A circa {distance} km dall’autore',denied:'Posizione non disponibile. Controlla i permessi.',unsupported:'Geolocalizzazione non disponibile.',articles:'articoli',approx:'Le posizioni sono approssimative a livello di città.',mapLabel:'Mappa mondiale degli articoli',articlePin:'Articoli',visitedPin:'Luoghi visitati',currentPin:'Autore',unlocated:'Gli altri articoli non sono ancora localizzati'},
  de:{title:'Karte',visited:'Besuchte Länder und Regionen',country:'China · Thailand',regions:'Taiyuan · Pingyao · Yuncheng · Xi’an · Peking · Tianjin · Weihai · Yantai · Qingdao · Tai Shan · Shenzhen · Huizhou · Guangzhou · Lingnan · Hongkong · Macau · Bangkok · Phuket',current:'Standort des Autors',locate:'Entfernung berechnen',note:'Eine Standortfreigabe ist erforderlich; die Berechnung erfolgt im Browser.',result:'Etwa {distance} km vom Autor entfernt',denied:'Standort nicht verfügbar. Bitte Berechtigungen prüfen.',unsupported:'Standortbestimmung ist nicht verfügbar.',articles:'Beiträge',approx:'Die Orte sind auf Stadtebene angenähert.',mapLabel:'Weltkarte der Beiträge',articlePin:'Beiträge',visitedPin:'Besuchte Orte',currentPin:'Autor',unlocated:'Weitere Beiträge sind noch nicht verortet'}
 }[lang];
+const extras={zh:{home:'家乡',you:'你的位置',waiting:'正在获取你的位置…'},fr:{home:'Ville natale',you:'Votre position',waiting:'Localisation en cours…'},es:{home:'Ciudad natal',you:'Tu ubicación',waiting:'Obteniendo tu ubicación…'},it:{home:'Città natale',you:'La tua posizione',waiting:'Rilevamento della posizione…'},de:{home:'Heimatstadt',you:'Dein Standort',waiting:'Standort wird ermittelt…'}}[lang];
 const visited=[...places.locations,...places.visitedPlaces,places.currentLocation];
 const data=places.locations.map(place=>({...place,name:place.names[lang],articles:place.articleIds.map(id=>posts.find(post=>post.id===id)).filter(Boolean).map(post=>({title:post.title.rendered,path:localPath(new URL(post.link).pathname,lang)}))}));
 ---
@@ -18,7 +19,7 @@ const data=places.locations.map(place=>({...place,name:place.names[lang],article
 <main class="shell map-page experience-map">
   <h1>{copy.title}</h1>
   <div class="map-canvas-wrap">
-    <div id="article-map" class="article-map" role="region" aria-label={copy.mapLabel} data-places={JSON.stringify(data)} data-strings={JSON.stringify(copy)} data-current={JSON.stringify(places.currentLocation)} data-language={lang}></div>
+    <div id="article-map" class="article-map" role="region" aria-label={copy.mapLabel} data-places={JSON.stringify(data)} data-strings={JSON.stringify(copy)} data-current={JSON.stringify(places.currentLocation)} data-language={lang} data-extras={JSON.stringify(extras)}></div>
     <div class="map-overlay-legend"><span><i class="legend-visited"></i>{copy.visitedPin}</span><span><i class="legend-article"></i>{copy.articlePin}</span></div>
   </div>
   <div class="map-content">
@@ -36,11 +37,12 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import {distanceKm} from '../lib/distance.js';
 const element=document.getElementById('article-map');
 if(element){
- const places=JSON.parse(element.dataset.places||'[]'),copy=JSON.parse(element.dataset.strings||'{}'),current=JSON.parse(element.dataset.current||'{}'),lang=element.dataset.language||'zh';
+ const places=JSON.parse(element.dataset.places||'[]'),copy=JSON.parse(element.dataset.strings||'{}'),current=JSON.parse(element.dataset.current||'{}'),lang=element.dataset.language||'zh',extras=JSON.parse(element.dataset.extras||'{}');
  const button=document.querySelector('.map-locate'),result=document.querySelector('.map-distance');
- button?.addEventListener('click',()=>{if(!navigator.geolocation){if(result)result.textContent=copy.unsupported;return}navigator.geolocation.getCurrentPosition(position=>{const km=distanceKm(position.coords.latitude,position.coords.longitude,current.latitude,current.longitude);if(result)result.textContent=copy.result.replace('{distance}',new Intl.NumberFormat(lang==='zh'?'zh-CN':lang,{maximumFractionDigits:0}).format(km))},()=>{if(result)result.textContent=copy.denied},{enableHighAccuracy:false,timeout:10000,maximumAge:300000})});
+ let map, visitorMarker, visitorPosition;
+
  try {
-  const map=new maplibregl.Map({container:element,style:{version:8,sources:{world:{type:'geojson',data:'/map/world.geojson',attribution:'<a href="https://www.naturalearthdata.com/">Natural Earth</a>'}},layers:[{id:'water',type:'background',paint:{'background-color':'#e8edf0'}},{id:'land',type:'fill',source:'world',paint:{'fill-color':'#f8f7f4'}},{id:'borders',type:'line',source:'world',paint:{'line-color':'#d2d7dc','line-width':0.7}}]},center:[109,27],zoom:window.innerWidth<600?2.5:3.2,scrollZoom:false});
+  map=new maplibregl.Map({container:element,style:{version:8,sources:{world:{type:'geojson',data:'/map/world.geojson',attribution:'<a href="https://www.naturalearthdata.com/">Natural Earth</a>'}},layers:[{id:'water',type:'background',paint:{'background-color':'#e8edf0'}},{id:'land',type:'fill',source:'world',paint:{'fill-color':'#f8f7f4'}},{id:'borders',type:'line',source:'world',paint:{'line-color':'#d2d7dc','line-width':0.7}}]},center:[109,27],zoom:window.innerWidth<600?2.5:3.2,scrollZoom:false});
   map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
   map.on('load',()=>{
    map.addSource('visited-regions',{type:'geojson',data:'/map/visited-regions.geojson'});
@@ -53,10 +55,32 @@ if(element){
    const box=document.createElement('div'),title=document.createElement('strong'),list=document.createElement('ul');title.textContent=place.name;box.append(title);
    for(const article of place.articles){const li=document.createElement('li'),a=document.createElement('a');a.href=article.path;a.textContent=new DOMParser().parseFromString(article.title,'text/html').body.textContent;li.append(a);list.append(li)}box.append(list);
    new maplibregl.Marker({element:marker,anchor:'center'}).setLngLat([place.longitude,place.latitude]).setPopup(new maplibregl.Popup({offset:18,maxWidth:'260px'}).setDOMContent(box)).addTo(map);
+   if(place.id==='pingyao'){const home=document.createElement('div');home.className='journey-home';home.setAttribute('role','img');home.setAttribute('aria-label',`${extras.home}: ${place.name}`);home.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>';new maplibregl.Marker({element:home,anchor:'bottom',offset:[0,-13]}).setLngLat([place.longitude,place.latitude]).addTo(map)}
   }
   const author=document.createElement('div');author.className='journey-author';author.setAttribute('aria-label',`${copy.current}: ${current.names[lang]}`);const dot=document.createElement('span'),label=document.createElement('span');dot.className='journey-author-dot';label.className='journey-author-label';label.textContent="Hi, I'm here";author.append(dot,label);
   new maplibregl.Marker({element:author,anchor:'left'}).setLngLat([current.longitude,current.latitude]).addTo(map);
   document.querySelectorAll('.map-destination[data-longitude]').forEach(chip=>chip.addEventListener('click',()=>map.flyTo({center:[Number(chip.dataset.longitude),Number(chip.dataset.latitude)],zoom:7,duration:matchMedia('(prefers-reduced-motion: reduce)').matches?0:900})));
  } catch(error) {console.error('Map unavailable:',error); element.classList.add('map-unavailable');}
+ function drawConnection(){
+  if(!map||!visitorPosition)return;
+  if(!map.isStyleLoaded()){map.once('idle',drawConnection);return}
+  const [longitude,latitude]=visitorPosition;let authorLongitude=current.longitude;
+  while(authorLongitude-longitude>180)authorLongitude-=360;
+  while(authorLongitude-longitude< -180)authorLongitude+=360;
+  const line={type:'Feature',properties:{},geometry:{type:'LineString',coordinates:[[longitude,latitude],[authorLongitude,current.latitude]]}};
+  const source=map.getSource('visitor-connection');
+  if(source)source.setData(line);else{map.addSource('visitor-connection',{type:'geojson',data:line});map.addLayer({id:'visitor-connection',type:'line',source:'visitor-connection',paint:{'line-color':'#db776b','line-width':2,'line-opacity':0.85,'line-dasharray':[2,2]}})}
+  if(visitorMarker)visitorMarker.remove();
+  const visitor=document.createElement('div');visitor.className='journey-visitor';visitor.setAttribute('role','img');visitor.setAttribute('aria-label',extras.you);
+  visitorMarker=new maplibregl.Marker({element:visitor,anchor:'center'}).setLngLat([longitude,latitude]).addTo(map);
+  map.fitBounds([[Math.min(longitude,authorLongitude),Math.min(latitude,current.latitude)],[Math.max(longitude,authorLongitude),Math.max(latitude,current.latitude)]],{padding:80,maxZoom:8,duration:matchMedia('(prefers-reduced-motion: reduce)').matches?0:900});
+ }
+ function locate(){
+  if(!navigator.geolocation){if(result)result.textContent=copy.unsupported;return}
+  if(result)result.textContent=extras.waiting;
+  navigator.geolocation.getCurrentPosition(position=>{visitorPosition=[position.coords.longitude,position.coords.latitude];const km=distanceKm(position.coords.latitude,position.coords.longitude,current.latitude,current.longitude);if(result)result.textContent=copy.result.replace('{distance}',new Intl.NumberFormat(lang==='zh'?'zh-CN':lang,{maximumFractionDigits:0}).format(km));drawConnection()},()=>{if(result)result.textContent=copy.denied},{enableHighAccuracy:false,timeout:10000,maximumAge:300000});
+ }
+ button?.addEventListener('click',locate);
+ locate();
 }
 </script>
