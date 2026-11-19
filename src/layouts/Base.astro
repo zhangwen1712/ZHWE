@@ -1,18 +1,21 @@
 ---
 import '../styles/site.css';
-const {title = 'ZHWE - 欢迎来到我的站点. . .', description = '你好，我是章文👏，这里是我的相簿🏞、日记本📔、垃圾桶。欢迎来到我的站点📫'} = Astro.props;
+import { labels, languages, localPath } from '../i18n.js';
+const {lang='zh', title='ZHWE', description=''} = Astro.props;
+const t=labels[lang];
+const originalPath=Astro.url.pathname.replace(/^\/(fr|es|it|de)(?=\/|$)/,'') || '/';
 ---
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width"/><meta name="robots" content="noindex,nofollow"/><meta name="description" content={description}/><title set:html={title}/><script is:inline>
+<!doctype html><html lang={lang === 'zh' ? 'zh-CN' : lang}><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width"/><meta name="robots" content="noindex,nofollow"/><meta name="description" content={description}/><title set:html={title}/><script is:inline>
 (function(){try{var saved=localStorage.getItem('zhwe-dark');var dark=saved==='1'||(saved!=='0'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark-mode',dark)}catch(e){document.documentElement.classList.toggle('dark-mode',matchMedia('(prefers-color-scheme: dark)').matches)}})();
 </script></head><body>
-<header class="site-header"><div class="shell header-inner"><a class="brand" href="/" aria-label="ZHWE 首页">ZHWE</a><nav class="main-nav" aria-label="主导航"><a href="/">首页</a><a href="/about/">关于章文</a><a href="/links/">友情链接</a><a href="/建站日志/">建站日志</a></nav><button class="theme-toggle" type="button" aria-label="切换深浅色模式" aria-pressed="false">◐</button></div></header>
-<slot/><footer class="site-footer"><div class="shell footer-inner"><div><a class="brand" href="/">ZHWE</a><p>欢迎来到我的站点. . .</p></div><nav aria-label="页脚导航"><a href="/about/">关于章文</a><a href="/links/">友情链接</a><a href="/隐私政策/">隐私政策</a></nav><small>Copyright {new Date().getFullYear()} — ZHWE. All rights reserved.</small></div></footer>
+<header class="site-header"><div class="shell header-inner"><a class="brand" href={localPath('/',lang)} aria-label="ZHWE">ZHWE</a><nav class="main-nav" aria-label={t.nav}><a href={localPath('/',lang)}>{t.home}</a><a href={localPath('/about/',lang)}>{t.about}</a><a href={localPath('/links/',lang)}>{t.links}</a><a href={localPath('/建站日志/',lang)}>{t.history}</a></nav><label class="language-select"><span class="sr-only">{t.language}</span><select aria-label={t.language} onchange="location.href=this.value">{Object.entries(languages).map(([key,name]) => <option value={localPath(originalPath,key)} selected={key===lang}>{name}</option>)}</select></label><button class="theme-toggle" type="button" data-light={t.toggleLight} data-dark={t.toggleDark} aria-label={t.toggleDark} aria-pressed="false">◐</button></div></header>
+<slot/><footer class="site-footer"><div class="shell footer-inner"><div><a class="brand" href={localPath('/',lang)}>ZHWE</a><p>{t.tagline}</p></div><nav aria-label={t.footer}><a href={localPath('/about/',lang)}>{t.about}</a><a href={localPath('/links/',lang)}>{t.links}</a><a href={localPath('/隐私政策/',lang)}>{t.privacy}</a></nav><small>Copyright {new Date().getFullYear()} — ZHWE. All rights reserved.</small></div></footer>
 <script is:inline>
 (function(){
  const root=document.documentElement, button=document.querySelector('.theme-toggle'), system=window.matchMedia('(prefers-color-scheme: dark)');
  let preference=null;
  try{const saved=localStorage.getItem('zhwe-dark');if(saved==='1'||saved==='0')preference=saved==='1'}catch{}
- function apply(dark){root.classList.toggle('dark-mode',dark);button?.setAttribute('aria-pressed',String(dark));button?.setAttribute('aria-label',dark?'切换到浅色模式':'切换到深色模式')}
+ function apply(dark){root.classList.toggle('dark-mode',dark);button?.setAttribute('aria-pressed',String(dark));button?.setAttribute('aria-label',dark?button.dataset.light:button.dataset.dark)}
  apply(preference===null?system.matches:preference);
  button?.addEventListener('click',()=>{preference=!root.classList.contains('dark-mode');apply(preference);try{localStorage.setItem('zhwe-dark',preference?'1':'0')}catch{}});
  system.addEventListener('change',event=>{if(preference===null)apply(event.matches)});

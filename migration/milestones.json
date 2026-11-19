@@ -1,0 +1,70 @@
+{
+  "items": [
+    {
+      "date": "2021年06月30日",
+      "title": "破壳而出",
+      "description": "站点在http://118.31.74.255/wordpress上线"
+    },
+    {
+      "date": "2023年05月17日",
+      "title": "购买域名",
+      "description": "zhangwen1712.top"
+    },
+    {
+      "date": "2023年05月20日",
+      "title": "ICP备案",
+      "description": "备案提交至工信部"
+    },
+    {
+      "date": "2023年05月29日",
+      "title": "ICP备案通过",
+      "description": "工信部审核通过站点在www.zhangwen1712.top上线"
+    },
+    {
+      "date": "2023年06月07日",
+      "title": "公网安备",
+      "description": "站点提交至京公网安备"
+    },
+    {
+      "date": "2023年06月08日",
+      "title": "关闭评论",
+      "description": "下线评论功能，历史评论全部删除"
+    },
+    {
+      "date": "2023年06月12日",
+      "title": "公网安备通过",
+      "description": "站点通过公网安备"
+    },
+    {
+      "date": "2023年08月01日",
+      "title": "增加订阅功能",
+      "description": "新增订阅和分享功能，后台管理升级"
+    },
+    {
+      "date": "2023年09月29日",
+      "title": "开启https访问",
+      "description": "部署ssl证书"
+    },
+    {
+      "date": "2024年02月10日",
+      "title": "网站大搬家",
+      "description": "域名修改为www.zhwe.top<br/>服务迁移到BlueHost<br/>开启评论功能"
+    },
+    {
+      "date": "2024年03月22日",
+      "title": "支持国际化",
+      "description": "使用GTranslate以支持国际化（已弃用）"
+    },
+    {
+      "date": "2024年7月14日",
+      "title": "主题更换",
+      "description": "主题切换为Bloglo"
+    },
+    {
+      "date": "2025年1月18日",
+      "title": "服务器迁移",
+      "description": "迁移服务到 美国犹他州普若佛"
+    }
+  ],
+  "remainingHtml": "\n\n<p class=\"wp-block-paragraph\">目前服务器在美国犹他州普若佛托管CDN提供商为Cloudflare。<a href=\"https://zhwe.top/cdn-cgi/trace\" rel=\"nofollow\">CDN追踪</a></p>\n<p class=\"wp-block-paragraph\"><a href=\"https://radar.cloudflare.com/scan/192af9c5-2637-4087-b53c-38fae7ff7a2b/summary\" rel=\"noreferrer noopener\" target=\"_blank\">Cloudflare Radar</a></p>\n<h2 class=\"wp-block-heading\">更新日志</h2>\n<p class=\"wp-block-paragraph\">2024年7月12日</p>\n<p class=\"wp-block-paragraph\">备份服务改为UpdraftPlus Backup/Restore，文件传入FTP服务器</p>\n<p class=\"wp-block-paragraph\">2024年7月14日</p>\n<p class=\"wp-block-paragraph\">无法解决Bravade主题主页文章列表的格式错乱故更换主题为<a href=\"https://wordpress.org/themes/bloglo/\" rel=\"noreferrer noopener\" target=\"_blank\">Bloglo</a></p>\n<p class=\"wp-block-paragraph\">2024年7月15日</p>\n<p class=\"wp-block-paragraph\">卸载非必要插件提高运行速度</p>\n<p class=\"wp-block-paragraph\">2024年9月19日</p>\n<p class=\"wp-block-paragraph\">深浅模式跟随系统切换</p>\n<p class=\"wp-block-paragraph\">2024年11月16日</p>\n<p class=\"wp-block-paragraph\">更新缓存规则，动态html将从CDN获取</p>\n<p class=\"has-text-align-right wp-block-paragraph\" style=\"font-size:14px\"><em>loction：</em>北京</p>\n<div class=\"wp-block-post-date__modified-date has-text-align-right wp-block-post-date\" style=\"font-size:14px\"><time datetime=\"2025-08-10T09:17:31+08:00\">Aug 10, 2025 9:17 AM</time></div>"
+}

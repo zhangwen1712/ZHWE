@@ -8,7 +8,7 @@
 npm ci
 ASTRO_TELEMETRY_DISABLED=1 npm run dev
 ASTRO_TELEMETRY_DISABLED=1 npm run build
-./node_modules/node/bin/node --test test/comments.test.mjs
+./node_modules/node/bin/node --test test/*.test.mjs
 ```
 
 项目需要 Node.js 22.23.4 或更高版本，开发依赖包含本地 Node 运行时。构建输出在 `dist/`。
@@ -30,3 +30,9 @@ ASTRO_TELEMETRY_DISABLED=1 npm run build
 ## Cloudflare Pages 审核版
 
 使用 `npm run build:pages` 构建，输出目录为 `dist`。由于 Pages 单文件上限为 25 MiB，审核版的两个大视频暂时从原网站加载；GitHub 中保留原文件。评论服务尚未连接，部署静态页面不会启用新评论。审核版保留 noindex，正式切换前需迁移大视频并完成评论、资源和 SEO 校验。
+
+## 多语言
+
+中文保留原有路径，法语、西班牙语、意大利语和德语分别使用 `/fr/`、`/es/`、`/it/`、`/de/` 路径。网站译文主要来自 Cloudflare Workers AI，少量遗漏经人工补译；译文可能存在误译，应结合原文审核。翻译脚本依赖 `requirements-translation.txt` 中的 Python 包，以及已登录的 `cf` CLI；公开内容更新时运行 `python3 scripts/translate-site.py` 补充译文，再运行 `python3 scripts/generate-locales.py` 生成页面数据；构建前核对翻译覆盖率和原有链接、媒体。
+
+建站日志的时间节点从原页面提取到 `migration/milestones.json`，保留原始时间和描述。调整视觉样式时不要增加未经证实的事件。

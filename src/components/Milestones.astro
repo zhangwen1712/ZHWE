@@ -1,0 +1,6 @@
+---
+import defaultTimeline from '../../migration/milestones.json';
+const {timeline=defaultTimeline,lang='zh'}=Astro.props;
+function displayDate(value){if(lang==='zh')return value;const parts=value.match(/(\d+)年(\d+)月(\d+)日/);return parts?new Intl.DateTimeFormat(lang,{year:'numeric',month:'long',day:'numeric',timeZone:'UTC'}).format(new Date(Date.UTC(Number(parts[1]),Number(parts[2])-1,Number(parts[3])))):value;}
+---
+<div class="milestones"><ol>{timeline.items.map(event => <li class="milestone"><time>{displayDate(event.date)}</time><div class="milestone-card"><h2>{event.title}</h2><div set:html={event.description}></div></div></li>)}</ol><div class="milestone-rest entry-content" set:html={timeline.remainingHtml}></div></div>

@@ -7,7 +7,7 @@ const scripts = [...source.matchAll(/<script is:inline>([\s\S]*?)<\/script>/g)].
 function setup(saved, dark) {
  let value=saved, onChange, onClick; const set=new Set(), attrs={};
  const media={matches:dark,addEventListener:(type,fn)=>{onChange=fn}};
- const button={setAttribute:(k,v)=>attrs[k]=v,addEventListener:(type,fn)=>{onClick=fn}};
+ const button={dataset:{light:'light',dark:'dark'},setAttribute:(k,v)=>attrs[k]=v,addEventListener:(type,fn)=>{onClick=fn}};
  const root={classList:{toggle:(k,on)=>on?set.add(k):set.delete(k),contains:k=>set.has(k)}};
  const storage={getItem:()=>value,setItem:(key,v)=>{value=v}};
  const context=vm.createContext({document:{documentElement:root,querySelector:()=>button},window:{matchMedia:()=>media},matchMedia:()=>media,localStorage:storage});

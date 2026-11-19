@@ -1,6 +1,6 @@
 ---
 import Comment from './Comment.astro';
-const { comment, comments } = Astro.props;
+const { comment, comments, lang='zh' } = Astro.props;
 const replies = comments.filter((entry) => entry.parent === comment.id);
 ---
-<li class="comment"><div class="comment-body"><strong>{comment.author_name}</strong><time datetime={comment.date}>{new Date(comment.date).toLocaleDateString('zh-CN')}</time><div set:html={comment.content.rendered}></div></div>{replies.length > 0 && <ol class="replies">{replies.map(reply => <Comment comment={reply} comments={comments} />)}</ol>}</li>
+<li class="comment"><div class="comment-body"><strong>{comment.author_name}</strong><time datetime={comment.date}>{new Date(comment.date).toLocaleDateString(lang === 'zh' ? 'zh-CN' : lang)}</time><div set:html={comment.content.rendered}></div></div>{replies.length > 0 && <ol class="replies">{replies.map(reply => <Comment comment={reply} comments={comments} lang={lang} />)}</ol>}</li>

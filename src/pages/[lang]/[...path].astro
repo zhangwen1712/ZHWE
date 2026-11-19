@@ -1,0 +1,19 @@
+---
+import ContentPage from '../../components/ContentPage.astro';
+import fr from '../../../translations/fr-content.json';
+import es from '../../../translations/es-content.json';
+import it from '../../../translations/it-content.json';
+import de from '../../../translations/de-content.json';
+export function getStaticPaths(){
+ const pathOf=(url)=>decodeURIComponent(new URL(url).pathname).replace(/^\/+|\/+$/g,'');
+ return Object.entries({fr,es,it,de}).flatMap(([lang,data])=>{
+  const posts=data['published-posts'], pages=data['published-pages'];
+  const entries=[...posts.map(item=>({path:pathOf(item.link),kind:'post',item})),...pages.map(item=>({path:pathOf(item.link),kind:'page',item}))];
+  const archives=[...data.categories.map(term=>({path:pathOf(term.link),kind:'category',term})),...data.tags.map(term=>({path:pathOf(term.link),kind:'tag',term}))];
+  const pagination=Array.from({length:Math.ceil(posts.length/10)-1},(_,i)=>({path:`page/${i+2}`,kind:'pagination',page:i+2}));
+  const seen=new Set();return [...entries,...archives,...pagination].filter(x=>x.path&&!seen.has(x.path)&&seen.add(x.path)).map(({path,...props})=>({params:{lang,path},props:{...props,lang,localizedPosts:posts,localizedCategories:data.categories,localizedComments:data.comments,timeline:data.milestones}}));
+ });
+}
+const props=Astro.props;
+---
+<ContentPage {...props}/>

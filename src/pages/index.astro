@@ -1,8 +1,4 @@
 ---
-import Base from '../layouts/Base.astro';
-import Card from '../components/Card.astro';
-import posts from '../../migration/published-posts.json';
-import categories from '../../migration/categories.json';
-const featured=[['天津','/2024/08/18/天津/','/wp-content/uploads/2024/08/IMG_20240817_143615webp.webp'],['毕业','/2021/07/09/毕业/','/wp-content/uploads/2024/06/IMG_3341webpwebp-scaled.webp'],['威海','/2024/05/05/威海/','/wp-content/uploads/2024/05/KAIwebpwebp-scaled.webp']];
+import Home from '../components/Home.astro';
 ---
-<Base><main><section class="hero shell"><div class="hero-copy"><h1>ZHWE</h1><p class="hero-description">欢迎来到我的站点. . .</p><a class="primary-link" href="#latest">文章 <span>↘</span></a></div><div class="hero-image"><img src="/wp-content/uploads/2024/09/2024-08-28-20-06-32.webp" alt=""/></div></section><section class="shell featured"><div class="section-heading"><div><h2>精选集</h2></div></div><div class="featured-grid">{featured.map(([name,link,image])=><a href={link} class="feature-item"><img src={image} alt=""/><span>{name}<b>↗</b></span></a>)}</div></section><section id="latest" class="shell latest"><div class="section-heading"><div><h2>文章</h2></div></div><div class="category-list"><a href="/">全部文章</a>{categories.filter(c=>c.count>0).map(c=><a href={new URL(c.link).pathname}>{c.name}</a>)}</div><div class="posts-grid">{posts.slice(0,10).map(post=><Card post={post}/>)}</div><nav class="pagination"><a href="/page/2/">查看更多文章 <span>→</span></a></nav></section></main></Base>
+<Home />

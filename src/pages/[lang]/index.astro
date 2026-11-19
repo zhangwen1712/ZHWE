@@ -1,0 +1,14 @@
+---
+import Home from '../../components/Home.astro';
+import fr from '../../../translations/fr-content.json';
+import es from '../../../translations/es-content.json';
+import it from '../../../translations/it-content.json';
+import de from '../../../translations/de-content.json';
+import frDict from '../../../translations/fr.json';
+import esDict from '../../../translations/es.json';
+import itDict from '../../../translations/it.json';
+import deDict from '../../../translations/de.json';
+export function getStaticPaths(){return Object.keys({fr,es,it,de}).map(lang=>({params:{lang},props:{data:{fr,es,it,de}[lang],translations:{fr:frDict,es:esDict,it:itDict,de:deDict}[lang]}}));}
+const {lang}=Astro.params;const {data,translations}=Astro.props;
+---
+<Home lang={lang} posts={data['published-posts']} categories={data.categories} translations={translations} />

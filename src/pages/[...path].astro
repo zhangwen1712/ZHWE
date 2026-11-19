@@ -1,37 +1,6 @@
 ---
-import Base from '../layouts/Base.astro';
-import Card from '../components/Card.astro';
-import Comment from '../components/Comment.astro';
-import CommentForm from '../components/CommentForm.astro';
-import comments from '../../migration/comments.json';
-import posts from '../../migration/published-posts.json';
-import pages from '../../migration/published-pages.json';
-import categories from '../../migration/categories.json';
-import tags from '../../migration/tags.json';
+import ContentPage from '../components/ContentPage.astro';
 export { getStaticPaths } from '../routes.js';
-const {kind,item,term,page}=Astro.props;
-const selected=kind==='pagination'?posts.slice((page-1)*10,page*10):kind==='category'?posts.filter(p=>p.categories.includes(term.id)):kind==='tag'?posts.filter(p=>p.tags.includes(term.id)):[];
-const html=(item?.content?.rendered || '').replace(/\s(?:srcset|sizes)=(["']).*?\1/gi, '').replace(/https?:\/\/zhwe\.top(?=\/wp-content\/uploads\/)/g, '').replace(/https?:\/\/zhwe\.top\/(?!wp-content\/)/g, '/');
-const postComments = item ? comments.filter(c => c.post === item.id) : [];
-const hasNext = page && page !== Math.ceil(posts.length / 10);
-const title=item?.title?.rendered||term?.name||`文章 - 第 ${page} 页`;
+const props=Astro.props;
 ---
-<Base title={`${title} - ZHWE`}>
-  <main class="shell content-wrap">
-    {item && <article class="single-post">
-      <h1 set:html={title} />
-      {kind === 'post' && <p class="entry-meta">By 章文　{new Date(item.date).toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'})}</p>}
-      <div class="entry-content" set:html={html}></div>
-      {postComments.length > 0 && <section class="comments"><h2>评论</h2><ol>{postComments.filter(c => c.parent === 0).map(comment => <Comment comment={comment} comments={postComments} />)}</ol></section>}
-    {kind === 'post' && <CommentForm postId={item.id} />}
-    </article>}
-    {!item && <section>
-      <h1 set:html={title} />
-      <div class="posts-grid">{selected.map(post => <Card post={post} />)}</div>
-      {kind === 'pagination' && <nav class="pagination">
-        <a href={page > 2 ? `/page/${page - 1}/` : '/'}>« 上一页</a>
-        {hasNext && <a href={`/page/${page + 1}/`}>下一页 »</a>}
-      </nav>}
-    </section>}
-  </main>
-</Base>
+<ContentPage {...props} />

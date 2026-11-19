@@ -1,0 +1,11 @@
+---
+import Base from '../layouts/Base.astro';
+import {labels,localPath} from '../i18n.js';
+import Card from './Card.astro';
+import defaultPosts from '../../migration/published-posts.json';
+import defaultCategories from '../../migration/categories.json';
+const {lang='zh', posts=defaultPosts, categories=defaultCategories, translations={}} = Astro.props;
+const t=labels[lang];
+const featured=[['天津','/2024/08/18/天津/','/wp-content/uploads/2024/08/IMG_20240817_143615webp.webp'],['毕业','/2021/07/09/毕业/','/wp-content/uploads/2024/06/IMG_3341webpwebp-scaled.webp'],['威海','/2024/05/05/威海/','/wp-content/uploads/2024/05/KAIwebpwebp-scaled.webp']];
+---
+<Base lang={lang}><main><section class="hero shell"><div class="hero-copy"><h1>ZHWE</h1><p class="hero-description">{t.tagline}</p><a class="primary-link" href="#latest">{t.posts} <span>↘</span></a></div><div class="hero-image"><img src="/wp-content/uploads/2024/09/2024-08-28-20-06-32.webp" alt=""/></div></section><section class="shell featured"><div class="section-heading"><div><h2>{t.featured}</h2></div></div><div class="featured-grid">{featured.map(([name,link,image])=><a href={localPath(link,lang)} class="feature-item"><img src={image} alt=""/><span>{translations[name] || name}<b>↗</b></span></a>)}</div></section><section id="latest" class="shell latest"><div class="section-heading"><div><h2>{t.posts}</h2></div></div><div class="category-list"><a href={localPath('/',lang)}>{t.all}</a>{categories.filter(c=>c.count>0).map(c=><a href={localPath(new URL(c.link).pathname,lang)}>{c.name}</a>)}</div><div class="posts-grid">{posts.slice(0,10).map(post=><Card post={post} lang={lang} categories={categories}/>)}</div><nav class="pagination"><a href={localPath('/page/2/',lang)}>{t.more} <span>→</span></a></nav></section></main></Base>
