@@ -45,6 +45,6 @@ ASTRO_TELEMETRY_DISABLED=1 npm run build
 
 ## 地图与显示偏好
 
-`/map/` 及对应多语言路径展示文章中的城市级近似地点；数据维护在 `migration/article-locations.json`。标记来自明确文章内容或站长确认的到访地点，不能把歌曲、新闻提到的地点当作访问经历。未能判断的文章保留在 `unlocatedArticleIds` 中，不自动猜测。地图使用 Leaflet 与 OpenStreetMap 瓦片；访客点击计算距离并授权后，仅在浏览器中计算与深圳市中心的近似直线距离。
+`/map/` 及对应多语言路径展示文章中的城市级近似地点；数据维护在 `migration/article-locations.json`。标记来自明确文章内容或站长确认的到访地点，不能把歌曲、新闻提到的地点当作访问经历。未能判断的文章保留在 `unlocatedArticleIds` 中，不自动猜测。地图使用 MapLibre 和 Natural Earth 世界底图，到访城市以行政区域高亮，文章和站长位置分别描点。边界数据及许可见 `licenses/map-data-attribution.md`；岭南范围较广，仅列出名称。访客点击计算距离并授权后，仅在浏览器中计算与深圳市中心的近似直线距离。
 
 页脚提供浅色、深色、随系统三个选项，并保留旧版手动主题偏好。语言优先使用用户在页面中选择并保存在浏览器的语言；未选择时匹配浏览器支持的语言，无法匹配时使用中文。明确访问某个语言路径时保留该路径。

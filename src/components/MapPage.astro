@@ -11,23 +11,52 @@ const copy={
  it:{title:'Mappa',visited:'Paesi e regioni visitati',country:'Cina · Thailandia',regions:'Taiyuan · Pingyao · Yuncheng · Xi’an · Pechino · Tianjin · Weihai · Yantai · Qingdao · Monte Tai · Shenzhen · Huizhou · Guangzhou · Lingnan · Hong Kong · Macao · Bangkok · Phuket',current:'Posizione dell’autore',locate:'Calcola la distanza',note:'Serve il permesso di localizzazione; il calcolo rimane nel browser.',result:'A circa {distance} km dall’autore',denied:'Posizione non disponibile. Controlla i permessi.',unsupported:'Geolocalizzazione non disponibile.',articles:'articoli',approx:'Le posizioni sono approssimative a livello di città.',mapLabel:'Mappa mondiale degli articoli',articlePin:'Articoli',visitedPin:'Luoghi visitati',currentPin:'Autore',unlocated:'Gli altri articoli non sono ancora localizzati'},
  de:{title:'Karte',visited:'Besuchte Länder und Regionen',country:'China · Thailand',regions:'Taiyuan · Pingyao · Yuncheng · Xi’an · Peking · Tianjin · Weihai · Yantai · Qingdao · Tai Shan · Shenzhen · Huizhou · Guangzhou · Lingnan · Hongkong · Macau · Bangkok · Phuket',current:'Standort des Autors',locate:'Entfernung berechnen',note:'Eine Standortfreigabe ist erforderlich; die Berechnung erfolgt im Browser.',result:'Etwa {distance} km vom Autor entfernt',denied:'Standort nicht verfügbar. Bitte Berechtigungen prüfen.',unsupported:'Standortbestimmung ist nicht verfügbar.',articles:'Beiträge',approx:'Die Orte sind auf Stadtebene angenähert.',mapLabel:'Weltkarte der Beiträge',articlePin:'Beiträge',visitedPin:'Besuchte Orte',currentPin:'Autor',unlocated:'Weitere Beiträge sind noch nicht verortet'}
 }[lang];
+const visited=[...places.locations,...places.visitedPlaces,places.currentLocation];
 const data=places.locations.map(place=>({...place,name:place.names[lang],articles:place.articleIds.map(id=>posts.find(post=>post.id===id)).filter(Boolean).map(post=>({title:post.title.rendered,path:localPath(new URL(post.link).pathname,lang)}))}));
 ---
-<Base lang={lang} title={`${copy.title} - ZHWE`}><main class="shell map-page"><h1>{copy.title}</h1><div class="map-grid"><div><div id="article-map" class="article-map" role="region" aria-label={copy.mapLabel} data-places={JSON.stringify(data)} data-strings={JSON.stringify(copy)} data-current={JSON.stringify(places.currentLocation)} data-visited={JSON.stringify(places.visitedPlaces)} data-language={lang}></div><p class="map-note">{copy.approx}</p><div class="map-legend"><span><i class="legend-article"></i>{copy.articlePin}</span><span><i class="legend-visited"></i>{copy.visitedPin}</span><span><i class="legend-current"></i>{copy.currentPin}</span></div></div><aside class="map-sidebar"><section><h2>{copy.visited}</h2><p><strong>{copy.country}</strong></p><p>{copy.regions}</p></section><section><h2>{copy.current}</h2><p>{places.currentLocation.names[lang]}</p><button class="map-locate" type="button">{copy.locate}</button><p class="map-note">{copy.note}</p><p class="map-distance" role="status"></p></section><section><p class="map-note">{places.unlocatedArticleIds.length} {copy.unlocated}</p><ul class="map-place-list">{data.map(p=><li><strong>{p.name}</strong><span>{p.articles.length} {copy.articles}</span><ul>{p.articles.map(a=><li><a href={a.path} set:html={a.title}/></li>)}</ul></li>)}</ul></section></aside></div></main></Base>
+<Base lang={lang} title={`${copy.title} - ZHWE`}>
+<main class="shell map-page experience-map">
+  <h1>{copy.title}</h1>
+  <div class="map-canvas-wrap">
+    <div id="article-map" class="article-map" role="region" aria-label={copy.mapLabel} data-places={JSON.stringify(data)} data-strings={JSON.stringify(copy)} data-current={JSON.stringify(places.currentLocation)} data-language={lang}></div>
+    <div class="map-overlay-legend"><span><i class="legend-visited"></i>{copy.visitedPin}</span><span><i class="legend-article"></i>{copy.articlePin}</span></div>
+  </div>
+  <div class="map-content">
+    <section class="map-journeys"><h2>{copy.visited}</h2><p class="map-countries">{copy.country}</p><div class="map-destinations">{visited.map(place=><button type="button" class="map-destination" data-longitude={place.longitude} data-latitude={place.latitude}>{place.names[lang]}</button>)}<span class="map-destination map-destination-label">Lingnan / 岭南</span></div></section>
+    <section class="map-distance-card"><h2>{copy.current}</h2><p>{places.currentLocation.names[lang]}</p><button class="map-locate" type="button">{copy.locate}</button><p class="map-note">{copy.note}</p><p class="map-distance" role="status"></p></section>
+  </div>
+  <details class="map-article-details"><summary>{copy.articlePin}</summary><p class="map-note">{copy.approx} {places.unlocatedArticleIds.length} {copy.unlocated}</p><ul class="map-place-list">{data.map(p=><li><strong>{p.name}</strong><span>{p.articles.length} {copy.articles}</span><ul>{p.articles.map(a=><li><a href={a.path} set:html={a.title}/></li>)}</ul></li>)}</ul></details>
+  <p class="map-source"><a href="https://www.naturalearthdata.com/">Natural Earth</a> · <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · <a href="https://github.com/Supeset/China-GeoData">China-GeoData</a> · <a href="https://www.geoboundaries.org/">geoBoundaries</a></p>
+</main></Base>
 <script>
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import * as maplibregl from 'maplibre-gl';
+import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
+maplibregl.setWorkerUrl(workerUrl);
+import 'maplibre-gl/dist/maplibre-gl.css';
 import {distanceKm} from '../lib/distance.js';
 const element=document.getElementById('article-map');
 if(element){
  const places=JSON.parse(element.dataset.places||'[]'),copy=JSON.parse(element.dataset.strings||'{}'),current=JSON.parse(element.dataset.current||'{}'),lang=element.dataset.language||'zh';
- const map=L.map(element,{scrollWheelZoom:false}).setView([30,45],2);
- L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
- const icon=L.divIcon({className:'map-pin',html:'<span></span>',iconSize:[22,22],iconAnchor:[11,11]});
- for(const place of places){const box=document.createElement('div'),title=document.createElement('strong'),list=document.createElement('ul');title.textContent=place.name;box.append(title);for(const article of place.articles){const li=document.createElement('li'),a=document.createElement('a');a.href=article.path;const text=new DOMParser().parseFromString(article.title,'text/html');a.textContent=text.body.textContent;li.append(a);list.append(li)}box.append(list);L.marker([place.latitude,place.longitude],{icon,title:place.name}).addTo(map).bindPopup(box)}
- const visited=JSON.parse(element.dataset.visited||'[]'); const visitedIcon=L.divIcon({className:'map-visited-pin',html:'<span></span>',iconSize:[18,18],iconAnchor:[9,9]}); for(const place of visited)L.marker([place.latitude,place.longitude],{icon:visitedIcon,title:place.names[lang]}).addTo(map).bindPopup(place.names[lang]);
- const author=L.divIcon({className:'map-current-pin',html:'<span></span>',iconSize:[22,22],iconAnchor:[11,11]});L.marker([current.latitude,current.longitude],{icon:author,title:current.names[lang]}).addTo(map).bindPopup(current.names[lang]);
  const button=document.querySelector('.map-locate'),result=document.querySelector('.map-distance');
  button?.addEventListener('click',()=>{if(!navigator.geolocation){if(result)result.textContent=copy.unsupported;return}navigator.geolocation.getCurrentPosition(position=>{const km=distanceKm(position.coords.latitude,position.coords.longitude,current.latitude,current.longitude);if(result)result.textContent=copy.result.replace('{distance}',new Intl.NumberFormat(lang==='zh'?'zh-CN':lang,{maximumFractionDigits:0}).format(km))},()=>{if(result)result.textContent=copy.denied},{enableHighAccuracy:false,timeout:10000,maximumAge:300000})});
+ try {
+  const map=new maplibregl.Map({container:element,style:{version:8,sources:{world:{type:'geojson',data:'/map/world.geojson',attribution:'<a href="https://www.naturalearthdata.com/">Natural Earth</a>'}},layers:[{id:'water',type:'background',paint:{'background-color':'#e8edf0'}},{id:'land',type:'fill',source:'world',paint:{'fill-color':'#f8f7f4'}},{id:'borders',type:'line',source:'world',paint:{'line-color':'#d2d7dc','line-width':0.7}}]},center:[109,27],zoom:window.innerWidth<600?2.5:3.2,scrollZoom:false});
+  map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
+  map.on('load',()=>{
+   map.addSource('visited-regions',{type:'geojson',data:'/map/visited-regions.geojson'});
+   const firstLabel=map.getStyle().layers.find(layer=>layer.type==='symbol')?.id;
+   map.addLayer({id:'visited-fill',type:'fill',source:'visited-regions',paint:{'fill-color':'#8067cf','fill-opacity':0.48}},firstLabel);
+   map.addLayer({id:'visited-outline',type:'line',source:'visited-regions',paint:{'line-color':'#7459c2','line-width':1.1,'line-opacity':0.8}},firstLabel);
+  });
+  for(const place of places){
+   const marker=document.createElement('button');marker.type='button';marker.className='journey-pin';marker.setAttribute('aria-label',`${place.name} · ${place.articles.length} ${copy.articles}`);
+   const box=document.createElement('div'),title=document.createElement('strong'),list=document.createElement('ul');title.textContent=place.name;box.append(title);
+   for(const article of place.articles){const li=document.createElement('li'),a=document.createElement('a');a.href=article.path;a.textContent=new DOMParser().parseFromString(article.title,'text/html').body.textContent;li.append(a);list.append(li)}box.append(list);
+   new maplibregl.Marker({element:marker,anchor:'center'}).setLngLat([place.longitude,place.latitude]).setPopup(new maplibregl.Popup({offset:18,maxWidth:'260px'}).setDOMContent(box)).addTo(map);
+  }
+  const author=document.createElement('div');author.className='journey-author';author.setAttribute('aria-label',`${copy.current}: ${current.names[lang]}`);const dot=document.createElement('span'),label=document.createElement('span');dot.className='journey-author-dot';label.className='journey-author-label';label.textContent="Hi, I'm here";author.append(dot,label);
+  new maplibregl.Marker({element:author,anchor:'left'}).setLngLat([current.longitude,current.latitude]).addTo(map);
+  document.querySelectorAll('.map-destination[data-longitude]').forEach(chip=>chip.addEventListener('click',()=>map.flyTo({center:[Number(chip.dataset.longitude),Number(chip.dataset.latitude)],zoom:7,duration:matchMedia('(prefers-reduced-motion: reduce)').matches?0:900})));
+ } catch(error) {console.error('Map unavailable:',error); element.classList.add('map-unavailable');}
 }
 </script>
