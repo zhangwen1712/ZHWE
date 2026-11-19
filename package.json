@@ -1,1 +1,1 @@
-{"name":"zhwe","version":"0.1.0","private":true,"type":"module","scripts":{"dev":"astro dev --host 127.0.0.1","build":"astro build","preview":"astro preview --host 127.0.0.1"},"dependencies":{"astro":"^7.4.13"},"devDependencies":{"node":"^22.23.4"}}
+{"name":"zhwe","version":"0.1.0","private":true,"type":"module","scripts":{"dev":"astro dev --host 127.0.0.1","build":"astro build","preview":"astro preview --host 127.0.0.1"},"dependencies":{"astro":"^7.4.13"},"devDependencies":{"cf":"^1.0.0-rc.2","node":"^22.23.4"}}

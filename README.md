@@ -1,6 +1,6 @@
 # ZHWE
 
-ZHWE WordPress 迁移至 Astro 的进行中项目。当前是复刻初版，尚不能替代线上网站。
+将个人博客从 WordPress 迁移到 Astro、GitHub 与 Cloudflare 的进行中项目。原站尚未切换。
 
 ## 本地运行
 
@@ -8,17 +8,21 @@ ZHWE WordPress 迁移至 Astro 的进行中项目。当前是复刻初版，尚�
 npm ci
 ASTRO_TELEMETRY_DISABLED=1 npm run dev
 ASTRO_TELEMETRY_DISABLED=1 npm run build
+./node_modules/node/bin/node --test test/comments.test.mjs
 ```
 
-Astro 需要 Node.js 22.23.4 或更高版本；项目中的开发依赖提供本地 Node 运行时。构建输出为 `dist/`。
+项目需要 Node.js 22.23.4 或更高版本，开发依赖包含本地 Node 运行时。构建输出在 `dist/`。
 
-## 当前内容
+## 内容与媒体
 
-- 已发布文章、页面、分类及标签的公开数据在 `migration/`；不包含草稿。
-- 保留文章和页面路径，生成首页、文章、页面、分类、标签和分页。
-- `baseline/homepage.html` 是迁移前的公开首页快照，用于对照。
-- `public/assets/bloglo.css` 来自原站的 Bloglo 主题，`dynamic-styles.css` 为现站主题配置生成的样式。
+`migration/` 包含已公开的文章、页面、分类、标签、历史评论及媒体清单。WordPress 草稿不放入此公开仓库。原路径保留；`public/wp-content/uploads/` 包含媒体库原文件和正文使用的文件。为减少重复，不保留全部自动生成的缩略图。`migration/assets-manifest.json` 列出已下载文件。
 
-## 迁移未完成
+文章正文中有 14 个旧阿里云 OSS 图片链接无法下载；这些链接暂时保留，待从备份恢复后替换。两个大于 25 MiB 的视频需要在 Cloudflare 上使用 R2 等存储，不能直接作为 Workers 静态资源部署。
 
-图片与部分字体、嵌入内容仍从原站加载；主题样式、导航、滚动文章、页脚、评论、搜索、特殊区块、SEO、移动端与交互尚未完整复刻和逐页验收。预览暂设 `noindex`。部署到正式域名前必须完成媒体迁移、功能与内容校验，核对链接、SEO、重定向，并建立回滚方案。请勿把此版本视为生产版本。
+## 评论
+
+历史公开评论静态展示。新评论的 Worker 接口位于 `worker/comments.mjs`，数据表在 `migrations/0001_comments.sql`；评论默认待审核，并具备长度、来源和提交频率检查。接口代码有本地模拟测试。
+
+**新评论服务尚未部署或配置**：仍需创建并绑定独立 D1 数据库、配置 `COMMENT_SALT` 密钥和防滥用措施、设置审核操作、验证部署路由及端到端流程。Astro 本地静态预览中提交评论会提示服务未启用。不要在正式站启用前声称评论可用。
+
+当前网站仍为开发预览：外部失效图片、复杂区块、原有页面交互、SEO、移动端及历史内容需要继续核对；预览页面保留 `noindex`。正式域名切换前需完成内容对账、功能测试与回滚方案。
