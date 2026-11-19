@@ -254,6 +254,18 @@
       },
       "latitude": 7.8804,
       "longitude": 98.3923
+    },
+    {
+      "id": "foshan",
+      "names": {
+        "zh": "佛山",
+        "fr": "Foshan",
+        "es": "Foshan",
+        "it": "Foshan",
+        "de": "Foshan"
+      },
+      "latitude": 23.028762,
+      "longitude": 113.122717
     }
   ],
   "unlocatedArticleIds": [
