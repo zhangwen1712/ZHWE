@@ -1,11 +1,12 @@
 ---
 import '../styles/site.css';
 import { labels, languages, localPath } from '../i18n.js';
-const {lang='zh', title='ZHWE', description=''} = Astro.props;
+const {lang='zh', title='ZHWE', description='', is404=false} = Astro.props;
 const t=labels[lang];
 const originalPath=Astro.url.pathname.replace(/^\/(fr|es|it|de)(?=\/|$)/,'') || '/';
 ---
-<!doctype html><html lang={lang === 'zh' ? 'zh-CN' : lang}><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width"/><meta name="robots" content="noindex,nofollow"/><meta name="description" content={description}/><title set:html={title}/><script is:inline>
+<!doctype html><html lang={lang === 'zh' ? 'zh-CN' : lang}><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width"/><link rel="icon" href="/favicon.ico" sizes="any"/><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"/><link rel="apple-touch-icon" href="/apple-touch-icon.png"/><link rel="manifest" href="/site.webmanifest"/><meta name="theme-color" content="#f8f7fb"/><meta name="robots" content="noindex,nofollow"/>{description && <meta name="description" content={description}/>}
+{!is404 && <><link rel="canonical" href={new URL(localPath(originalPath,lang),Astro.site)}/>{Object.keys(languages).map(key=><link rel="alternate" hreflang={key === 'zh' ? 'zh-CN' : key} href={new URL(localPath(originalPath,key),Astro.site)}/>)}<link rel="alternate" hreflang="x-default" href={new URL(originalPath,Astro.site)}/><meta property="og:type" content="website"/><meta property="og:title" content={title}/><meta property="og:url" content={new URL(localPath(originalPath,lang),Astro.site)}/></>}<title set:html={title}/><script is:inline>
 (function(){try{var saved=localStorage.getItem('zhwe-dark');var dark=saved==='1'||(saved!=='0'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark-mode',dark)}catch(e){document.documentElement.classList.toggle('dark-mode',matchMedia('(prefers-color-scheme: dark)').matches)}})();
 </script></head><body>
 <header class="site-header"><div class="shell header-inner"><a class="brand" href={localPath('/',lang)} aria-label="ZHWE">ZHWE</a><nav class="main-nav" aria-label={t.nav}><a href={localPath('/',lang)}>{t.home}</a><a href={localPath('/about/',lang)}>{t.about}</a><a href={localPath('/links/',lang)}>{t.links}</a><a href={localPath('/建站日志/',lang)}>{t.history}</a></nav><label class="language-select"><span class="sr-only">{t.language}</span><select aria-label={t.language} onchange="location.href=this.value">{Object.entries(languages).map(([key,name]) => <option value={localPath(originalPath,key)} selected={key===lang}>{name}</option>)}</select></label><button class="theme-toggle" type="button" data-light={t.toggleLight} data-dark={t.toggleDark} aria-label={t.toggleDark} aria-pressed="false">◐</button></div></header>

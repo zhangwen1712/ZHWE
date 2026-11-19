@@ -1,0 +1,6 @@
+---
+import NotFound from '../../components/NotFound.astro';
+export function getStaticPaths(){return ['fr','es','it','de'].map(lang=>({params:{lang}}));}
+const {lang}=Astro.params;
+---
+<NotFound lang={lang} />

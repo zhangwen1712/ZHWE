@@ -1,0 +1,8 @@
+---
+import Base from '../layouts/Base.astro';
+import {localPath} from '../i18n.js';
+const {lang='zh'}=Astro.props;
+const labels={zh:['页面未找到','返回首页'],fr:['Page introuvable','Retour à l’accueil'],es:['Página no encontrada','Volver al inicio'],it:['Pagina non trovata','Torna alla home'],de:['Seite nicht gefunden','Zur Startseite']};
+const [title,home]=labels[lang];
+---
+<Base is404={true} lang={lang} title={`404 - ${title} - ZHWE`}><main class="shell not-found"><p class="not-found-code">404</p><h1>{title}</h1><a class="primary-link" href={localPath('/',lang)}>{home}</a></main></Base>
