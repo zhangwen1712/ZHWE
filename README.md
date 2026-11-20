@@ -57,6 +57,15 @@ ASTRO_TELEMETRY_DISABLED=1 npm run build
 
 ## 自动检查
 
-GitHub Actions 在 PR、主分支和 `ci/` 分支更新及手动运行时执行 JavaScript 语法、构建、测试、翻译覆盖率、生成文件一致性和 npm 高危依赖检查。PR 比较目标分支的原文与翻译字典：现存缺失译文会在运行摘要中报告；新增原文缺少对应翻译、删除已有译文或提交空译文会使检查失败。覆盖率表示原文是否有非空字典映射，并不能判断翻译质量；未改变的词条可能是名称或本来就是英文。繁体中文通过生成一致性和原文链接、数据完整性测试检查。
+`Blog quality checks` 在 PR、`main` 和 `ci/` 分支推送及手动运行时执行：
 
-本地运行：`npm ci`，`python3 -m pip install -r requirements-translation.txt`，`npm run check:syntax`，`python3 scripts/check-translation-coverage.py --base HEAD`，`python3 scripts/generate-locales.py`，`python3 scripts/generate-traditional.py`，`ASTRO_TELEMETRY_DISABLED=1 npm run build:pages`，`npm test`，`python3 -m unittest discover -s test -p '*_test.py'` 和 `npm audit --audit-level=high`。提交前检查生成的翻译文件差异。CI 不自动合并或部署。
+- 代码语法、补丁空白、Pages 构建与自动测试。
+- 公开文章、页面、历史评论和媒体 ID 与基准分支比较；文章原始 URL 和已有媒体引用被移除时失败。
+- 所有语言的站内链接、媒体、canonical、hreflang、sitemap、审核站 noindex 和 robots；已知 14 个历史失效路径记录在 `ci/known-missing-internal.json`，新增失效路径会失败。修复历史路径后从基线移除。
+- 译文字典覆盖率、生成文件一致性和页面完整度摘要。已有未完成译文仅报告，新增缺失或删除已有译文会失败；整页回退功能尚未进入主分支时会明确报告未启用，进入主分支后检查实际回退结果。字典映射不代表翻译质量。
+- Playwright 以手机视口检查分页、语言与主题、搜索、友链、日志、404、定位拒绝和模拟授权后的距离排序。定位只用测试坐标。
+- `npm audit` 检查高危依赖，PR 额外使用 GitHub Dependency Review 检查新增依赖。
+
+`Advisory site reports` 每周、手动触发及 `ci/` 分支推送时运行，生成外链和媒体、手机端 axe 无障碍及 Lighthouse 报告；第三方限流、网络波动和实验室分数不会阻止 PR。报告在 Actions 摘要和短期保存的 artifact 中查看，自动扫描不能取代人工审核。
+
+本地执行：`npm ci`、`python3 -m pip install -r requirements-translation.txt`、`npm run check:syntax`、`python3 scripts/check-translation-coverage.py --base HEAD`、`python3 scripts/report-page-translations.py`、`python3 scripts/generate-locales.py`、`python3 scripts/generate-traditional.py`、`ASTRO_TELEMETRY_DISABLED=1 npm run build:pages`、`python3 scripts/check-site-integrity.py`、`BASE_SHA=HEAD python3 scripts/check-content-integrity.py`、`npm test`、`python3 -m unittest discover -s test -p '*_test.py'`、`npx playwright install chromium`、`npm run test:browser` 和 `npm audit --audit-level=high`。CI 不自动合并或部署；是否阻止合并由仓库分支保护规则决定。
