@@ -57,6 +57,6 @@ ASTRO_TELEMETRY_DISABLED=1 npm run build
 
 ## 自动检查
 
-GitHub Actions 在 PR、主分支更新及手动运行时执行 JavaScript 语法、构建、测试、翻译覆盖率、生成文件一致性和 npm 高危依赖检查。PR 比较目标分支的原文与翻译字典：现存缺失译文会在运行摘要中报告；新增原文缺少对应翻译、删除已有译文或提交空译文会使检查失败。覆盖率表示原文是否有非空字典映射，并不能判断翻译质量；未改变的词条可能是名称或本来就是英文。繁体中文通过生成一致性和原文链接、数据完整性测试检查。
+GitHub Actions 在 PR、主分支和 `ci/` 分支更新及手动运行时执行 JavaScript 语法、构建、测试、翻译覆盖率、生成文件一致性和 npm 高危依赖检查。PR 比较目标分支的原文与翻译字典：现存缺失译文会在运行摘要中报告；新增原文缺少对应翻译、删除已有译文或提交空译文会使检查失败。覆盖率表示原文是否有非空字典映射，并不能判断翻译质量；未改变的词条可能是名称或本来就是英文。繁体中文通过生成一致性和原文链接、数据完整性测试检查。
 
 本地运行：`npm ci`，`python3 -m pip install -r requirements-translation.txt`，`npm run check:syntax`，`python3 scripts/check-translation-coverage.py --base HEAD`，`python3 scripts/generate-locales.py`，`python3 scripts/generate-traditional.py`，`ASTRO_TELEMETRY_DISABLED=1 npm run build:pages`，`npm test`，`python3 -m unittest discover -s test -p '*_test.py'` 和 `npm audit --audit-level=high`。提交前检查生成的翻译文件差异。CI 不自动合并或部署。
