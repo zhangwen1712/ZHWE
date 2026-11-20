@@ -41,3 +41,30 @@ a,button{transition:color .2s ease,background-color .2s ease,border-color .2s ea
 .main-nav .nav-search { text-decoration: underline; text-underline-offset: .22em; }
 .main-nav .nav-search:focus-visible { outline-offset: -2px; }
 .map-destination-distance{color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* Preserve the source content while giving each linked organization its own card. */
+.friend-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;align-items:stretch}
+.friend-links> :not(.wp-block-columns){grid-column:1/-1}
+.friend-links>.wp-block-columns{display:grid;grid-template-columns:54px minmax(0,1fr);gap:1rem;align-content:start;margin:0;padding:1.25rem;border:1px solid var(--line);border-radius:16px;background:var(--surface);transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
+.friend-links>.wp-block-columns:hover{transform:translateY(-3px);border-color:#b9a9d3;box-shadow:0 12px 32px #29243712}
+.friend-links>.wp-block-columns .wp-block-column{min-width:0}
+.friend-links>.wp-block-columns figure{margin:0}
+.friend-links>.wp-block-columns img{width:54px!important;height:54px!important;object-fit:contain;border-radius:12px;background:#fff}
+.friend-links>.wp-block-columns p{margin:0;line-height:1.7;font-size:.91rem}
+.friend-links>.wp-block-columns p+p{margin-top:.4rem;color:var(--muted)}
+.friend-links>.wp-block-columns a{font-weight:700;text-decoration:none;overflow-wrap:anywhere}
+.friend-links>.wp-block-columns a:hover{text-decoration:underline}
+@media(max-width:700px){.friend-links{grid-template-columns:1fr}.friend-links>.wp-block-columns{grid-template-columns:46px minmax(0,1fr);padding:1rem}.friend-links>.wp-block-columns img{width:46px!important;height:46px!important}}
+
+/* A quiet timeline: readable even where scroll-driven animation is unsupported. */
+.milestones{margin-top:3rem}.milestones ol{position:relative;border:0;padding:0 0 0 2.5rem;margin-bottom:3rem}
+.milestones ol:before{content:'';position:absolute;left:.48rem;top:.7rem;bottom:1.5rem;width:2px;background:linear-gradient(#ae96d0,#dfd7eb)}
+.milestone{padding:0 0 1.45rem}.milestone:before{left:-2.36rem;top:.42rem;width:.72rem;height:.72rem;border:3px solid #8e74b8;background:var(--surface);box-shadow:0 0 0 5px var(--surface)}
+.milestone time{display:inline-block;font-size:.77rem;letter-spacing:.035em;font-weight:750;color:var(--accent)}
+.milestone-card{margin-top:.55rem;padding:1.35rem 1.5rem;border:1px solid var(--line);border-radius:18px;background:var(--surface);box-shadow:0 8px 28px #29243708;transition:transform .25s ease,box-shadow .25s ease}
+.milestone-card:hover{transform:translateY(-2px);box-shadow:0 12px 30px #29243714}
+.milestone-card h2{font-size:1.1rem}.milestone-card div{font-size:.95rem;overflow-wrap:anywhere}
+@media(max-width:700px){.milestones{margin-top:2rem}.milestones ol{padding-left:2rem}.milestone:before{left:-1.86rem}.milestone-card{padding:1.1rem 1.15rem;border-radius:15px}}
+@supports (animation-timeline:view()){@media(prefers-reduced-motion:no-preference){.milestone-card{animation:milestone-appear both linear;animation-timeline:view();animation-range:entry 0% entry 70%}}}
+@keyframes milestone-appear{from{opacity:.5;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.friend-links>.wp-block-columns,.milestone-card{transition:none}.friend-links>.wp-block-columns:hover,.milestone-card:hover{transform:none}}

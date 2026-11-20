@@ -11,7 +11,7 @@ ASTRO_TELEMETRY_DISABLED=1 npm run build
 ./node_modules/node/bin/node --test test/*.test.mjs
 ```
 
-项目需要 Node.js 22.23.4 或更高版本，开发依赖包含本地 Node 运行时。构建输出在 `dist/`。构建后运行 `npm run preview`，可在 `/search/` 及各语言的搜索页验证 Pagefind 全文搜索。
+项目需要 Node.js 22.23.4 或更高版本，开发依赖包含本地 Node 运行时。构建输出在 `dist/`。构建后运行 `npm run preview`，可在 `/search/` 及各语言的搜索页验证 Pagefind 全文搜索；有文章封面时搜索结果展示原封面，无封面时不显示占位图。
 
 ## 内容与媒体
 
@@ -33,9 +33,9 @@ ASTRO_TELEMETRY_DISABLED=1 npm run build
 
 ## 多语言
 
-英文使用不带语言前缀的根路径，简体中文使用 `/zh/`，繁体中文使用 `/zh-Hant/`，法语、西班牙语、意大利语和德语分别使用 `/fr/`、`/es/`、`/it/`、`/de/` 路径。英文译文尚未完成，缺失部分保留简体中文原文并在文章页提示。网站译文主要来自 Cloudflare Workers AI，少量遗漏经人工补译；译文可能存在误译，应结合原文审核。翻译脚本依赖 `requirements-translation.txt` 中的锁定 Python 包，以及已登录的 `cf` CLI；公开内容更新时运行 `python3 scripts/translate-site.py` 补充译文，再运行 `python3 scripts/generate-locales.py` 生成页面数据；构建前核对翻译覆盖率和原有链接、媒体。
+英文使用不带语言前缀的根路径，简体中文使用 `/zh/`，繁体中文使用 `/zh-Hant/`，法语、西班牙语、意大利语和德语分别使用 `/fr/`、`/es/`、`/it/`、`/de/` 路径。英文译文尚未完成，缺失部分保留简体中文原文并在文章页提示。网站译文主要来自 Cloudflare Workers AI，少量遗漏经人工补译；译文可能存在误译，应结合原文审核。翻译脚本依赖 `requirements-translation.txt` 中的 Python 包，以及已登录的 `cf` CLI；公开内容更新时运行 `python3 scripts/translate-site.py` 补充译文，再运行 `python3 scripts/generate-locales.py` 生成页面数据；构建前核对翻译覆盖率和原有链接、媒体。
 
-建站日志的时间节点从原页面提取到 `migration/milestones.json`，保留原始时间和描述。调整视觉样式时不要增加未经证实的事件。
+建站日志的时间节点从原页面提取到 `migration/milestones.json`，保留原始时间和描述。调整视觉样式时不要增加未经证实的事件。友情链接的卡片基于原始内容结构呈现，保留原文和链接；日志滚动动画遵循系统减少动态效果设置。
 
 ## 搜索引擎与基础文件
 
