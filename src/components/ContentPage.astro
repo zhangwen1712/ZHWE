@@ -1,4 +1,5 @@
 ---
+import {POSTS_PER_PAGE} from '../lib/pagination.js';
 import Base from '../layouts/Base.astro';
 import Card from '../components/Card.astro';
 import Comment from '../components/Comment.astro';
@@ -14,10 +15,10 @@ import {labels,localPath} from '../i18n.js';
 
 const {kind,item,term,page,lang='zh',localizedPosts=posts,localizedCategories=categories,localizedComments=comments,timeline=defaultTimeline}=Astro.props;
 const t=labels[lang];
-const selected=kind==='pagination'?localizedPosts.slice((page-1)*10,page*10):kind==='category'?localizedPosts.filter(p=>p.categories.includes(term.id)):kind==='tag'?localizedPosts.filter(p=>p.tags.includes(term.id)):[];
+const selected=kind==='pagination'?localizedPosts.slice((page-1)*POSTS_PER_PAGE,page*POSTS_PER_PAGE):kind==='category'?localizedPosts.filter(p=>p.categories.includes(term.id)):kind==='tag'?localizedPosts.filter(p=>p.tags.includes(term.id)):[];
 const html=(item?.content?.rendered || '').replace(/\s(?:srcset|sizes)=(["']).*?\1/gi, '').replace(/https?:\/\/zhwe\.top(?=\/wp-content\/uploads\/)/g, '').replace(/https?:\/\/zhwe\.top\/(?!wp-content\/)/g, '/').replace(/href=(["'])\/(?!wp-content\/|\/)([^"']*)\1/g, (match,q,path)=>`href=${q}${localPath('/'+path,lang)}${q}`);
 const postComments = item ? localizedComments.filter(c => c.post === item.id) : [];
-const hasNext = page && page !== Math.ceil(localizedPosts.length / 10);
+const hasNext = page && page !== Math.ceil(localizedPosts.length / POSTS_PER_PAGE);
 const title=item?.title?.rendered||term?.name||`${t.posts} ${page}`;
 ---
 <Base lang={lang} title={`${title} - ZHWE`}>
