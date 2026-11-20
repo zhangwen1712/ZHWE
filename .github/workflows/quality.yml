@@ -1,40 +1,31 @@
 name: Blog quality checks
-
 on:
   pull_request:
   push:
-    branches: [main, 'ci/**']
+    branches: [main]
   workflow_dispatch:
-
 permissions:
   contents: read
-
 concurrency:
   group: quality-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+env:
+  ASTRO_TELEMETRY_DISABLED: '1'
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+
 jobs:
-  quality:
-    name: Build, tests, and translation coverage
+  build-content:
+    name: Build, content and site integrity
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    env:
-      ASTRO_TELEMETRY_DISABLED: '1'
-      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          persist-credentials: false
+        with: {fetch-depth: 0, persist-credentials: false}
       - uses: actions/setup-node@v6
-        with:
-          node-version-file: .node-version
-          cache: npm
+        with: {node-version-file: .node-version, cache: npm}
       - uses: actions/setup-python@v6
-        with:
-          python-version: '3.12'
-          cache: pip
-          cache-dependency-path: requirements-translation.txt
+        with: {python-version: '3.12', cache: pip, cache-dependency-path: requirements-translation.txt}
       - name: Install dependencies
         run: |
           npm ci
@@ -49,6 +40,25 @@ jobs:
           fi
       - name: Check JavaScript syntax
         run: npm run check:syntax
+      - name: Compare published content with base
+        run: python scripts/check-content-integrity.py
+      - name: Build Cloudflare Pages preview
+        run: npm run build:pages
+      - name: Check local links, SEO and preview policy
+        run: python scripts/check-site-integrity.py
+      - name: Run JavaScript tests
+        run: npm test
+
+  translations:
+    name: Translation coverage and page readiness
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with: {fetch-depth: 0, persist-credentials: false}
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.12', cache: pip, cache-dependency-path: requirements-translation.txt}
+      - run: python -m pip install -r requirements-translation.txt
       - name: Check translation coverage
         shell: bash
         run: |
@@ -57,16 +67,53 @@ jobs:
           else
             python scripts/check-translation-coverage.py --summary "$GITHUB_STEP_SUMMARY"
           fi
-      - name: Verify generated translations are current
+      - name: Report page readiness and verify fallback
+        run: python scripts/report-page-translations.py
+      - name: Verify generated translation data
         run: |
           python scripts/generate-locales.py
           python scripts/generate-traditional.py
           git diff --exit-code -- 'translations/*-content.json'
-      - name: Build Cloudflare Pages preview
-        run: npm run build:pages
-      - name: Run JavaScript tests
-        run: npm test
-      - name: Run translation coverage tests
+      - name: Run translation rule tests
         run: python -m unittest discover -s test -p '*_test.py'
-      - name: Check dependencies for high-severity vulnerabilities
-        run: npm audit --audit-level=high
+
+  mobile:
+    name: Mobile browser flows
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v6
+        with: {node-version-file: .node-version, cache: npm}
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build:pages
+      - run: npm run test:browser
+      - name: Upload browser report
+        if: always()
+        uses: actions/upload-artifact@v6
+        with: {name: mobile-browser-report, path: playwright-report/, if-no-files-found: ignore, retention-days: 7}
+
+  dependency-review:
+    name: Dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with: {persist-credentials: false}
+      - uses: actions/dependency-review-action@v4
+        with: {fail-on-severity: high}
+
+  audit:
+    name: Dependency vulnerability audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v6
+        with: {node-version-file: .node-version, cache: npm}
+      - run: npm ci
+      - run: npm audit --audit-level=high
