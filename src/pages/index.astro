@@ -1,4 +1,6 @@
 ---
 import Home from '../components/Home.astro';
+import {localeData,localeDictionaries} from '../locale-data.js';
+const data=localeData.en;
 ---
-<Home />
+<Home lang="en" posts={data['published-posts']} categories={data.categories} translations={localeDictionaries.en}/>

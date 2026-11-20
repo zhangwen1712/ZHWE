@@ -1,10 +1,7 @@
 ---
 import MapPage from '../../components/MapPage.astro';
-import fr from '../../../translations/fr-content.json';
-import es from '../../../translations/es-content.json';
-import it from '../../../translations/it-content.json';
-import de from '../../../translations/de-content.json';
-export function getStaticPaths(){return Object.entries({fr,es,it,de}).map(([lang,data])=>({params:{lang},props:{posts:data['published-posts']}}));}
+import {localeData} from '../../locale-data.js';
+export function getStaticPaths(){return Object.entries(localeData).filter(([lang])=>lang!=='en').map(([lang,data])=>({params:{lang},props:{posts:data['published-posts']}}));}
 const {lang}=Astro.params;const {posts}=Astro.props;
 ---
 <MapPage lang={lang} posts={posts}/>
