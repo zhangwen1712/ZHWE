@@ -11,7 +11,7 @@ ASTRO_TELEMETRY_DISABLED=1 npm run build
 ./node_modules/node/bin/node --test test/*.test.mjs
 ```
 
-项目需要 Node.js 22.23.4 或更高版本，开发依赖包含本地 Node 运行时。构建输出在 `dist/`。
+项目需要 Node.js 22.23.4 或更高版本，开发依赖包含本地 Node 运行时。构建输出在 `dist/`。构建后运行 `npm run preview`，可在 `/search/` 及四种译文的搜索页验证 Pagefind 全文搜索。
 
 ## 内容与媒体
 

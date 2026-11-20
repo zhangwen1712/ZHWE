@@ -7,3 +7,36 @@ export const labels = {
  de:{map:'Meine Spuren',theme:'Darstellung',light:'Hell',dark:'Dunkel',system:'System',nav:'Hauptnavigation',footer:'Fußzeilennavigation',language:'Sprache',home:'Startseite',about:'Über mich',links:'Links',history:'Website-Chronik',privacy:'Datenschutz',posts:'Beiträge',all:'Alle Beiträge',featured:'Auswahl',more:'Weitere Beiträge',read:'Lesen',comments:'Kommentare',next:'Weiter',previous:'Zurück',tagline:'Willkommen auf meiner Website. . .',toggleLight:'Hellen Modus aktivieren',toggleDark:'Dunklen Modus aktivieren'}
 };
 export const localPath=(path,lang)=>lang==='zh'?path:`/${lang}${path.startsWith('/')?path:'/'+path}`;
+
+export const searchLabels = {
+  zh: {
+    title: '搜索文章', action: '搜索', query: '关键词',
+    loading: '正在搜索…', empty: '没有找到匹配的文章。',
+    error: '暂时无法搜索，请重试。', results: '找到 {count} 篇文章。',
+    more: '加载更多结果', noScript: '请启用 JavaScript 以搜索文章。'
+  },
+  fr: {
+    title: 'Rechercher des articles', action: 'Rechercher', query: 'Mots-clés',
+    loading: 'Recherche en cours…', empty: 'Aucun article correspondant.',
+    error: 'La recherche est indisponible. Réessayez.', results: 'Articles trouvés : {count}.',
+    more: 'Afficher plus de résultats', noScript: 'Activez JavaScript pour rechercher des articles.'
+  },
+  es: {
+    title: 'Buscar artículos', action: 'Buscar', query: 'Palabras clave',
+    loading: 'Buscando…', empty: 'No se encontraron artículos.',
+    error: 'La búsqueda no está disponible. Inténtalo de nuevo.', results: 'Artículos encontrados: {count}.',
+    more: 'Ver más resultados', noScript: 'Activa JavaScript para buscar artículos.'
+  },
+  it: {
+    title: 'Cerca articoli', action: 'Cerca', query: 'Parole chiave',
+    loading: 'Ricerca in corso…', empty: 'Nessun articolo corrispondente.',
+    error: 'La ricerca non è disponibile. Riprova.', results: 'Articoli trovati: {count}.',
+    more: 'Mostra altri risultati', noScript: 'Attiva JavaScript per cercare articoli.'
+  },
+  de: {
+    title: 'Beiträge suchen', action: 'Suchen', query: 'Suchbegriffe',
+    loading: 'Suche läuft…', empty: 'Keine passenden Beiträge gefunden.',
+    error: 'Die Suche ist derzeit nicht verfügbar. Bitte versuche es erneut.', results: 'Gefundene Beiträge: {count}.',
+    more: 'Weitere Ergebnisse anzeigen', noScript: 'Aktiviere JavaScript, um Beiträge zu suchen.'
+  }
+};
