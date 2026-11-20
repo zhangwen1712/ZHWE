@@ -48,3 +48,9 @@ ASTRO_TELEMETRY_DISABLED=1 npm run build
 `/map/` 及对应多语言路径展示文章中的城市级近似地点；数据维护在 `migration/article-locations.json`。标记来自明确文章内容或站长确认的到访地点，不能把歌曲、新闻提到的地点当作访问经历。未能判断的文章保留在 `unlocatedArticleIds` 中，不自动猜测。足迹使用 MapLibre 和 OpenFreeMap 底图展示地名及行政区划，底图不可用时回退到 Natural Earth 世界底图，到访城市以行政区域高亮，文章和站长位置分别描点。边界数据及许可见 `licenses/map-data-attribution.md`。访问底图服务时浏览器会直接连接 OpenFreeMap，服务商可根据请求的地图区域推测大致位置；进入足迹页面时会请求访客位置权限；授权后仅在浏览器中计算与深圳市中心的近似直线距离，并在地图上标注访客位置和连线。平遥以房子图标标记家乡。
 
 页脚提供浅色、深色、随系统三个选项，并保留旧版手动主题偏好。语言优先使用用户在页面中选择并保存在浏览器的语言；未选择时匹配浏览器支持的语言，无法匹配时使用中文。明确访问某个语言路径时保留该路径。
+
+## 开发协作
+
+后续功能迭代从独立分支创建 PR，未经站长明确指示不得合并或直接推送 main。仓库每小时检查 Issue 的本地自动化仅处理 `zhangwen1712` 发布的 Issue。
+
+英文默认语言与繁体中文的路由迁移尚在进行；`translations/zh-Hant-content.json` 是以 OpenCC 生成的繁体内容草稿，尚未接入页面。重新生成需安装 `opencc-python-reimplemented` 并运行 `python3 scripts/generate-traditional.py`；英文翻译需在翻译服务配额恢复后完成，再进行完整路由和内容验证。
