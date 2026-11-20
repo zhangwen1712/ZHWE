@@ -56,7 +56,9 @@ def complete(entry, mapping, comments, timeline):
             segments.update(translatable(event['title']))
             segments.update(translatable(event['description']))
         segments.update(translatable(timeline['remainingHtml']))
-    return all(isinstance(mapping.get(segment), str) and mapping[segment].strip() for segment in segments)
+    # A nonempty dictionary entry can still contain untranslated Chinese/Japanese.
+    # Conservatively keep the original page until those mixed-script entries are fixed.
+    return all(isinstance(mapping.get(segment), str) and mapping[segment].strip() and not cjk.search(mapping[segment]) for segment in segments)
 
 def main():
     original = {name: json.loads((root / f'migration/{name}.json').read_text()) for name in names}
