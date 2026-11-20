@@ -17,7 +17,9 @@ const {kind,item,term,page,lang='zh',localizedPosts=posts,localizedCategories=ca
 const t=labels[lang];
 const selected=kind==='pagination'?localizedPosts.slice((page-1)*POSTS_PER_PAGE,page*POSTS_PER_PAGE):kind==='category'?localizedPosts.filter(p=>p.categories.includes(term.id)):kind==='tag'?localizedPosts.filter(p=>p.tags.includes(term.id)):[];
 const html=(item?.content?.rendered || '').replace(/\s(?:srcset|sizes)=(["']).*?\1/gi, '').replace(/https?:\/\/zhwe\.top(?=\/wp-content\/uploads\/)/g, '').replace(/https?:\/\/zhwe\.top\/(?!wp-content\/)/g, '/').replace(/href=(["'])\/(?!wp-content\/|\/)([^"']*)\1/g, (match,q,path)=>`href=${q}${localPath('/'+path,lang)}${q}`);
-const postComments = item ? localizedComments.filter(c => c.post === item.id) : [];
+const translationFallback = item?.translationComplete === false;
+const postComments = item ? (translationFallback ? comments : localizedComments).filter(c => c.post === item.id) : [];
+const fallbackMessage = {en:'This page is shown in Chinese until its translation is complete.',fr:'Cette page est affichée en chinois jusqu’à la fin de sa traduction.',es:'Esta página se muestra en chino hasta que se complete su traducción.',it:'Questa pagina è mostrata in cinese fino al completamento della traduzione.',de:'Diese Seite wird auf Chinesisch angezeigt, bis die Übersetzung abgeschlossen ist.'}[lang];
 const hasNext = page && page !== Math.ceil(localizedPosts.length / POSTS_PER_PAGE);
 const cover=kind==='post' ? item?.image?.replace('https://zhwe.top/wp-content/uploads/', '/wp-content/uploads/') : null;
 const title=item?.title?.rendered||term?.name||`${t.posts} ${page}`;
@@ -25,14 +27,14 @@ const title=item?.title?.rendered||term?.name||`${t.posts} ${page}`;
 <Base lang={lang} title={`${title} - ZHWE`}>
   <main class="shell content-wrap">
     {item && <article class="single-post">
-      {lang === 'en' && <p class="map-note">English translation is in progress; some content remains in Chinese.</p>}
-      <div data-pagefind-body={kind === 'post' ? true : undefined}>
+      {translationFallback && <p class="map-note">{fallbackMessage}</p>}
+      <div lang={translationFallback ? 'zh-CN' : undefined} data-pagefind-body={kind === 'post' ? true : undefined}>
         <h1 data-pagefind-meta={kind === 'post' ? 'title' : undefined} set:html={title} />
         {cover && <span hidden data-pagefind-meta="cover[data-cover]" data-cover={cover}></span>}
-        {kind === 'post' && <p class="entry-meta" data-pagefind-ignore="all">章文　{new Date(item.date).toLocaleDateString(lang==='zh'?'zh-CN':lang, {year:'numeric',month:'long',day:'numeric'})}</p>}
-        {item.id === 213 ? <Milestones timeline={timeline} lang={lang} /> : <div class:list={["entry-content", {"friend-links": item.id === 345}]} set:html={html}></div>}
+        {kind === 'post' && <p class="entry-meta" data-pagefind-ignore="all">章文　{new Date(item.date).toLocaleDateString(translationFallback || lang==='zh'?'zh-CN':lang, {year:'numeric',month:'long',day:'numeric'})}</p>}
+        {item.id === 213 ? <Milestones timeline={translationFallback ? defaultTimeline : timeline} lang={translationFallback ? "zh" : lang} /> : <div class:list={["entry-content", {"friend-links": item.id === 345}]} set:html={html}></div>}
       </div>
-      {postComments.length > 0 && <section class="comments"><h2>{t.comments}</h2><ol>{postComments.filter(c => c.parent === 0).map(comment => <Comment comment={comment} comments={postComments} lang={lang} />)}</ol></section>}
+      {postComments.length > 0 && <section class="comments"><h2>{t.comments}</h2><ol lang={translationFallback ? "zh-CN" : undefined}>{postComments.filter(c => c.parent === 0).map(comment => <Comment comment={comment} comments={postComments} lang={translationFallback ? "zh" : lang} />)}</ol></section>}
       {kind === 'post' && <CommentForm postId={item.id} lang={lang} />}
     </article>}
     {!item && <section>

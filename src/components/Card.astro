@@ -3,8 +3,9 @@ import defaultCategories from '../../migration/categories.json';
 import {labels,localPath} from '../i18n.js';
 const { post, featured = false, lang = 'zh', categories = defaultCategories } = Astro.props;
 const path = localPath(new URL(post.link).pathname, lang);
-const date = new Date(post.date).toLocaleDateString(lang==='zh'?'zh-CN':lang,{year:'numeric',month:'long',day:'numeric'});
-const category = categories.find(c => post.categories.includes(c.id));
+const fallback=post.translationComplete === false;
+const date = new Date(post.date).toLocaleDateString(fallback || lang==='zh'?'zh-CN':lang,{year:'numeric',month:'long',day:'numeric'});
+const category = (fallback ? defaultCategories : categories).find(c => post.categories.includes(c.id));
 const image = post.image?.replace('https://zhwe.top/wp-content/uploads/', '/wp-content/uploads/');
 ---
-<article class:list={['post-card', {'post-card-featured': featured, 'post-card-no-image': !image}]}><a class="card-link" href={path} aria-label={`${labels[lang].read} ${post.title.rendered}`}>{image && <div class="card-media"><img src={image} alt="" loading="lazy"/></div>}<div class="card-body"><div class="card-kicker">{category && <span>{category.name}</span>}<time datetime={post.date}>{date}</time></div><h2 set:html={post.title.rendered}></h2><div class="excerpt" set:html={post.excerpt.rendered}></div></div></a></article>
+<article class:list={['post-card', {'post-card-featured': featured, 'post-card-no-image': !image}]}><a class="card-link" href={path} aria-label={`${labels[lang].read} ${post.title.rendered}`}>{image && <div class="card-media"><img src={image} alt="" loading="lazy"/></div>}<div class="card-body" lang={fallback ? "zh-CN" : undefined}><div class="card-kicker">{category && <span>{category.name}</span>}<time datetime={post.date}>{date}</time></div><h2 set:html={post.title.rendered}></h2><div class="excerpt" set:html={post.excerpt.rendered}></div></div></a></article>
