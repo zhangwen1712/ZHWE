@@ -112,15 +112,19 @@
     }
   ],
   "currentLocation": {
-    "latitude": 22.5431,
-    "longitude": 114.0579,
+    "latitude": 22.6399,
+    "longitude": 114.0382,
     "names": {
-      "zh": "深圳",
-      "fr": "Shenzhen",
-      "es": "Shenzhen",
-      "it": "Shenzhen",
-      "de": "Shenzhen"
-    }
+      "zh": "深圳·龙华·油松",
+      "zh-Hant": "深圳·龍華·油松",
+      "en": "Yousong, Longhua, Shenzhen",
+      "fr": "Yousong, Longhua, Shenzhen",
+      "es": "Yousong, Longhua, Shenzhen",
+      "it": "Yousong, Longhua, Shenzhen",
+      "de": "Yousong, Longhua, Shenzhen"
+    },
+    "approximate": true,
+    "source": "OpenStreetMap node 10996469850 (Shangyousong)"
   },
   "visitedPlaces": [
     {
@@ -266,6 +270,46 @@
       },
       "latitude": 23.028762,
       "longitude": 113.122717
+    },
+    {
+      "id": "shenzhen",
+      "names": {
+        "zh": "深圳",
+        "fr": "Shenzhen",
+        "es": "Shenzhen",
+        "it": "Shenzhen",
+        "de": "Shenzhen"
+      },
+      "latitude": 22.5431,
+      "longitude": 114.0579
+    },
+    {
+      "id": "yuci",
+      "names": {
+        "zh": "榆次",
+        "zh-Hant": "榆次",
+        "en": "Yuci",
+        "fr": "Yuci",
+        "es": "Yuci",
+        "it": "Yuci",
+        "de": "Yuci"
+      },
+      "latitude": 37.6976,
+      "longitude": 112.7079
+    },
+    {
+      "id": "lvliang",
+      "names": {
+        "zh": "吕梁",
+        "zh-Hant": "呂梁",
+        "en": "Lüliang",
+        "fr": "Lüliang",
+        "es": "Lüliang",
+        "it": "Lüliang",
+        "de": "Lüliang"
+      },
+      "latitude": 37.524366,
+      "longitude": 111.134335
     }
   ],
   "unlocatedArticleIds": [

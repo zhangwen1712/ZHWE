@@ -15,7 +15,7 @@ const copy={
 }[lang];
 const extras={en:{home:'Hometown',you:'Your location',waiting:'Finding your location…'},'zh-Hant':{home:'家鄉',you:'你的位置',waiting:'正在取得你的位置…'},zh:{home:'家乡',you:'你的位置',waiting:'正在获取你的位置…'},fr:{home:'Ville natale',you:'Votre position',waiting:'Localisation en cours…'},es:{home:'Ciudad natal',you:'Tu ubicación',waiting:'Obteniendo tu ubicación…'},it:{home:'Città natale',you:'La tua posizione',waiting:'Rilevamento della posizione…'},de:{home:'Heimatstadt',you:'Dein Standort',waiting:'Standort wird ermittelt…'}}[lang];
 const placeName=p=>p.names[lang] || (lang==='zh-Hant'?p.names.zh:p.names.fr);
-const visited=[...places.locations,...places.visitedPlaces,places.currentLocation].map(p=>({...p,names:{...p.names,[lang]:placeName(p)}}));
+const visited=[...places.locations,...places.visitedPlaces].map(p=>({...p,names:{...p.names,[lang]:placeName(p)}}));
 const data=places.locations.map(place=>({...place,name:placeName(place),articles:place.articleIds.map(id=>posts.find(post=>post.id===id)).filter(Boolean).map(post=>({title:post.title.rendered,path:localPath(new URL(post.link).pathname,lang)}))}));
 ---
 <Base lang={lang} title={`${copy.title} - ZHWE`}>
@@ -26,7 +26,7 @@ const data=places.locations.map(place=>({...place,name:placeName(place),articles
     <div class="map-overlay-legend"><span><i class="legend-visited"></i>{copy.visitedPin}</span><span><i class="legend-article"></i>{copy.articlePin}</span></div>
   </div>
   <div class="map-content">
-    <section class="map-journeys"><h2>{copy.visited}</h2><p class="map-countries">{copy.country}</p><div class="map-destinations">{visited.map(place=><button type="button" class="map-destination" data-longitude={place.longitude} data-latitude={place.latitude}>{place.names[lang]}</button>)}</div></section>
+    <section class="map-journeys"><h2>{copy.visited}</h2><p class="map-countries">{copy.country}</p><div class="map-destinations">{visited.map(place=><button type="button" class="map-destination" data-longitude={place.longitude} data-latitude={place.latitude}><span>{place.names[lang]}</span><span class="map-destination-distance"></span></button>)}</div></section>
     <section class="map-distance-card"><h2>{copy.current}</h2><p>{placeName(places.currentLocation)}</p><button class="map-locate" type="button">{copy.locate}</button><p class="map-note">{copy.note}</p><p class="map-distance" role="status"></p></section>
   </div>
   <details class="map-article-details"><summary>{copy.articlePin}</summary><p class="map-note">{copy.approx} {places.unlocatedArticleIds.length} {copy.unlocated}</p><ul class="map-place-list">{data.map(p=><li><strong>{p.name}</strong><span>{p.articles.length} {copy.articles}</span><ul>{p.articles.map(a=><li><a href={a.path} set:html={a.title}/></li>)}</ul></li>)}</ul></details>
@@ -38,6 +38,7 @@ import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 maplibregl.setWorkerUrl(workerUrl);
 import 'maplibre-gl/dist/maplibre-gl.css';
 import {distanceKm} from '../lib/distance.js';
+import {sortVisitedByDistance} from '../lib/visited-distance.js';
 const element=document.getElementById('article-map');
 if(element){
  const places=JSON.parse(element.dataset.places||'[]'),copy=JSON.parse(element.dataset.strings||'{}'),current=JSON.parse(element.dataset.current||'{}'),lang=element.dataset.language||'zh',extras=JSON.parse(element.dataset.extras||'{}');
@@ -88,10 +89,17 @@ if(element){
   visitorMarker=new maplibregl.Marker({element:visitor,anchor:'left',offset:[-8,0]}).setLngLat([longitude,latitude]).addTo(map);
   map.fitBounds([[Math.min(longitude,authorLongitude),Math.min(latitude,current.latitude)],[Math.max(longitude,authorLongitude),Math.max(latitude,current.latitude)]],{padding:80,maxZoom:8,duration:matchMedia('(prefers-reduced-motion: reduce)').matches?0:900});
  }
+ function updateVisitedDistances(latitude,longitude){
+  const container=document.querySelector('.map-destinations');if(!container)return;
+  const chips=[...container.querySelectorAll('.map-destination[data-longitude]')];
+  const sorted=sortVisitedByDistance(chips.map(chip=>({chip,latitude:Number(chip.dataset.latitude),longitude:Number(chip.dataset.longitude)})),latitude,longitude);
+  const formatter=new Intl.NumberFormat(lang==='zh'?'zh-CN':lang,{style:'unit',unit:'kilometer',unitDisplay:'short',maximumFractionDigits:0});
+  for(const place of sorted){const label=place.chip.querySelector('.map-destination-distance');if(label)label.textContent=` · ≈${formatter.format(place.distance)}`;container.append(place.chip)}
+ }
  function locate(){
   if(!navigator.geolocation){if(result)result.textContent=copy.unsupported;return}
   if(result)result.textContent=extras.waiting;
-  navigator.geolocation.getCurrentPosition(position=>{visitorPosition=[position.coords.longitude,position.coords.latitude];const km=distanceKm(position.coords.latitude,position.coords.longitude,current.latitude,current.longitude);if(result)result.textContent=copy.result.replace('{distance}',new Intl.NumberFormat(lang==='zh'?'zh-CN':lang,{maximumFractionDigits:0}).format(km));drawConnection()},()=>{if(result)result.textContent=copy.denied},{enableHighAccuracy:false,timeout:10000,maximumAge:300000});
+  navigator.geolocation.getCurrentPosition(position=>{visitorPosition=[position.coords.longitude,position.coords.latitude];updateVisitedDistances(position.coords.latitude,position.coords.longitude);const km=distanceKm(position.coords.latitude,position.coords.longitude,current.latitude,current.longitude);if(result)result.textContent=copy.result.replace('{distance}',new Intl.NumberFormat(lang==='zh'?'zh-CN':lang,{maximumFractionDigits:0}).format(km));drawConnection()},()=>{if(result)result.textContent=copy.denied},{enableHighAccuracy:false,timeout:10000,maximumAge:300000});
  }
  button?.addEventListener('click',locate);
  locate();
