@@ -57,10 +57,16 @@ test('the built Pagefind runtime searches titles and body text in the active lan
     const target = `/${prefix}${postPath.slice(1)}`;
     const result = pages[paths.indexOf(target)];
     assert.equal(result?.meta.title, title, lang);
+    assert.equal(result?.meta.cover, '/wp-content/uploads/2025/06/2025-05-30-15-46-48.webp', lang);
     assert.match(result.excerpt, /<mark>/, lang);
     assert.ok(paths.every(path => path.startsWith(`/${prefix}20`)), lang);
 
     if (lang === 'zh-CN') {
+      const uncovered=await pagefind.search('重拾日记本');
+      const uncoveredPages=await Promise.all(uncovered.results.map(r=>r.data()));
+      const uncoveredPost=uncoveredPages.find(p=>decodeURIComponent(p.url).includes('/2025/01/26/重拾日记本/'));
+      assert.ok(uncoveredPost);assert.equal(uncoveredPost.meta.cover,undefined);
+
       const body = await pagefind.search('修炼爱情');
       const articles = await Promise.all(body.results.map(article => article.data()));
       assert.ok(articles.some(article =>

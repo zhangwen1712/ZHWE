@@ -37,7 +37,7 @@ const t = searchLabels[lang];
   const more = page.querySelector<HTMLButtonElement>('.search-more')!;
 
   interface SearchResult {
-    data(): Promise<{ url: string; meta: { title: string }; excerpt: string }>;
+    data(): Promise<{ url: string; meta: { title: string; cover?: string }; excerpt: string }>;
   }
 
   let index: Promise<{
@@ -75,10 +75,22 @@ const t = searchLabels[lang];
         link.href = result.url;
         link.textContent = result.meta.title;
         heading.append(link);
+        const content=document.createElement('div');
+        content.className='search-result-content';
+        if(result.meta.cover){
+          try {
+            const cover=new URL(result.meta.cover,location.origin);
+            if(cover.protocol==='https:' || (cover.protocol==='http:' && cover.origin===location.origin)){
+              const image=document.createElement('img');image.src=cover.href;image.alt='';image.loading='lazy';image.className='search-result-cover';
+              const imageLink=document.createElement('a');imageLink.href=result.url;imageLink.tabIndex=-1;imageLink.setAttribute('aria-hidden','true');imageLink.append(image);item.append(imageLink);
+            }
+          } catch {}
+        }
         const excerpt = document.createElement('p');
         // Pagefind escapes the indexed text before inserting its match markup.
         excerpt.innerHTML = result.excerpt;
-        item.append(heading, excerpt);
+        content.append(heading, excerpt);
+        item.append(content);
         return item;
       });
 
@@ -185,6 +197,17 @@ const t = searchLabels[lang];
     border: 1px solid var(--line);
     border-radius: .75rem;
     background: var(--surface);
+  }
+
+  .search-results :global(li:has(.search-result-cover)) {
+    display:grid; grid-template-columns: 150px minmax(0, 1fr); gap: 1rem; align-items:center;
+  }
+  .search-results :global(.search-result-cover) {
+    width:150px; aspect-ratio: 4 / 3; object-fit:cover; border-radius:.5rem;
+  }
+  @media(max-width:600px) {
+    .search-results :global(li:has(.search-result-cover)) {grid-template-columns: 88px minmax(0,1fr);gap:.75rem}
+    .search-results :global(.search-result-cover) {width:88px;aspect-ratio: 1}
   }
 
   .search-results :global(h2) {
