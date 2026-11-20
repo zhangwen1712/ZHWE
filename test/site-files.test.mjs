@@ -2,12 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,stat} from 'node:fs/promises';
 const read = file => readFile(new URL(`../dist/${file}`,import.meta.url),'utf8');
-test('sitemap and robots use the same review origin and exclude error pages',async()=>{
+test('sitemap excludes error pages and migration preview blocks all crawlers',async()=>{
  const sitemap=await read('sitemap.xml'),robots=await read('robots.txt');
  const origin=new URL(process.env.SITE_URL || 'https://zhwe-blog.pages.dev').origin;
  assert.match(sitemap,/<urlset/);assert.ok(sitemap.includes(`<loc>${origin}/</loc>`));
  for(const lang of ['fr','es','it','de'])assert.ok(sitemap.includes(`<loc>${origin}/${lang}/</loc>`));
- assert.ok(!sitemap.includes('/404/'));assert.ok(robots.includes(`Sitemap: ${origin}/sitemap.xml`));
+ assert.ok(!sitemap.includes('/404/'));assert.equal(robots, 'User-agent: *\nDisallow: /\n');
  assert.ok((sitemap.match(/<loc>/g)||[]).length>=1000);
 });
 test('root and localized not-found pages and icons are present',async()=>{
