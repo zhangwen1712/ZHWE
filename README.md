@@ -57,7 +57,7 @@ ASTRO_TELEMETRY_DISABLED=1 npm run build
 
 ## 自动检查
 
-`Blog quality checks` 在 PR、`main` 和 `ci/` 分支推送及手动运行时执行：
+`Blog quality checks` 在 PR、`main` 分支推送及手动运行时执行：
 
 - 代码语法、补丁空白、Pages 构建与自动测试。
 - 公开文章、页面、历史评论和媒体 ID 与基准分支比较；文章原始 URL 和已有媒体引用被移除时失败。
@@ -66,6 +66,6 @@ ASTRO_TELEMETRY_DISABLED=1 npm run build
 - Playwright 以手机视口检查分页、语言与主题、搜索、友链、日志、404、定位拒绝和模拟授权后的距离排序。定位只用测试坐标。
 - `npm audit` 检查高危依赖，PR 额外使用 GitHub Dependency Review 检查新增依赖。
 
-`Advisory site reports` 每周、手动触发及 `ci/` 分支推送时运行，生成外链和媒体、手机端 axe 无障碍及 Lighthouse 报告；第三方限流、网络波动和实验室分数不会阻止 PR。报告在 Actions 摘要和短期保存的 artifact 中查看，自动扫描不能取代人工审核。
+`Advisory site reports` 每周及手动触发时运行，生成外链和媒体、手机端 axe 无障碍及 Lighthouse 报告；第三方限流、网络波动和实验室分数不会阻止 PR。报告在 Actions 摘要和短期保存的 artifact 中查看，自动扫描不能取代人工审核。
 
 本地执行：`npm ci`、`python3 -m pip install -r requirements-translation.txt`、`npm run check:syntax`、`python3 scripts/check-translation-coverage.py --base HEAD`、`python3 scripts/report-page-translations.py`、`python3 scripts/generate-locales.py`、`python3 scripts/generate-traditional.py`、`ASTRO_TELEMETRY_DISABLED=1 npm run build:pages`、`python3 scripts/check-site-integrity.py`、`BASE_SHA=HEAD python3 scripts/check-content-integrity.py`、`npm test`、`python3 -m unittest discover -s test -p '*_test.py'`、`npx playwright install chromium`、`npm run test:browser` 和 `npm audit --audit-level=high`。CI 不自动合并或部署；是否阻止合并由仓库分支保护规则决定。

@@ -2,7 +2,7 @@ name: Blog quality checks
 on:
   pull_request:
   push:
-    branches: [main, 'ci/**']
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read

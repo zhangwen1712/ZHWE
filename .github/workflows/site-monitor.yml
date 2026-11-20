@@ -1,7 +1,5 @@
 name: Advisory site reports
 on:
-  push:
-    branches: ['ci/**']
   schedule:
     - cron: '0 2 * * 1'
   workflow_dispatch:
