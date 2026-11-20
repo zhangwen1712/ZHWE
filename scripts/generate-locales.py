@@ -15,7 +15,7 @@ def transform(value,mapping):
         text=str(n); stripped=text.strip()
         if stripped in mapping:n.replace_with(NavigableString(text.replace(stripped,mapping[stripped],1)))
     return str(soup)
-for lang in ['fr','es','it','de']:
+for lang in ['en','fr','es','it','de']:
     path=root/f'translations/{lang}.json'; mapping=json.loads(path.read_text()) if path.exists() else {};out={}
     for name in names:
         data=json.loads((root/f'migration/{name}.json').read_text())

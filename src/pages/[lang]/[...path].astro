@@ -1,12 +1,9 @@
 ---
 import ContentPage from '../../components/ContentPage.astro';
-import fr from '../../../translations/fr-content.json';
-import es from '../../../translations/es-content.json';
-import it from '../../../translations/it-content.json';
-import de from '../../../translations/de-content.json';
+import {localeData} from '../../locale-data.js';
 export function getStaticPaths(){
  const pathOf=(url)=>decodeURIComponent(new URL(url).pathname).replace(/^\/+|\/+$/g,'');
- return Object.entries({fr,es,it,de}).flatMap(([lang,data])=>{
+ return Object.entries(localeData).filter(([lang])=>lang!=='en').flatMap(([lang,data])=>{
   const posts=data['published-posts'], pages=data['published-pages'];
   const entries=[...posts.map(item=>({path:pathOf(item.link),kind:'post',item})),...pages.map(item=>({path:pathOf(item.link),kind:'page',item}))];
   const archives=[...data.categories.map(term=>({path:pathOf(term.link),kind:'category',term})),...data.tags.map(term=>({path:pathOf(term.link),kind:'tag',term}))];

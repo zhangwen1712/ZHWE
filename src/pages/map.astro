@@ -1,4 +1,5 @@
 ---
 import MapPage from '../components/MapPage.astro';
+import {localeData} from '../locale-data.js';
 ---
-<MapPage />
+<MapPage lang="en" posts={localeData.en['published-posts']}/>

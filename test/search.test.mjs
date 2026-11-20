@@ -6,7 +6,9 @@ import posts from '../migration/published-posts.json' with { type: 'json' };
 const dist = new URL('../dist/', import.meta.url);
 const read = path => readFile(new URL(path, dist), 'utf8');
 const cases = [
-  { lang: 'zh-CN', prefix: '', query: '端午假期', title: '端午假期' },
+  { lang: 'en', prefix: '', query: '端午假期', title: '端午假期' },
+  { lang: 'zh-Hant', prefix: 'zh-Hant/', query: '端午假期', title: '端午假期' },
+  { lang: 'zh-CN', prefix: 'zh/', query: '端午假期', title: '端午假期' },
   { lang: 'fr', prefix: 'fr/', query: 'vacances du Dragon Boat', title: 'Les vacances du Dragon Boat' },
   { lang: 'es', prefix: 'es/', query: 'vacaciones del festival', title: 'Vacaciones del festival de dragón' },
   { lang: 'it', prefix: 'it/', query: 'festa del drago', title: 'Festa del drago' },
@@ -62,7 +64,7 @@ test('the built Pagefind runtime searches titles and body text in the active lan
       const body = await pagefind.search('修炼爱情');
       const articles = await Promise.all(body.results.map(article => article.data()));
       assert.ok(articles.some(article =>
-        decodeURIComponent(article.url) === postPath && article.excerpt.includes('<mark>修炼</mark>')
+        decodeURIComponent(article.url) === `/zh${postPath}` && article.excerpt.includes('<mark>修炼</mark>')
       ));
       for (const excluded of ['希思罗机场的CDN节点', '欢迎来到我的站点', 'qzqznoarticles']) {
         assert.equal((await pagefind.search(excluded)).results.length, 0, excluded);

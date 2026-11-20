@@ -23,6 +23,7 @@ const title=item?.title?.rendered||term?.name||`${t.posts} ${page}`;
 <Base lang={lang} title={`${title} - ZHWE`}>
   <main class="shell content-wrap">
     {item && <article class="single-post">
+      {lang === 'en' && <p class="map-note">English translation is in progress; some content remains in Chinese.</p>}
       <div data-pagefind-body={kind === 'post' ? true : undefined}>
         <h1 data-pagefind-meta={kind === 'post' ? 'title' : undefined} set:html={title} />
         {kind === 'post' && <p class="entry-meta" data-pagefind-ignore="all">章文　{new Date(item.date).toLocaleDateString(lang==='zh'?'zh-CN':lang, {year:'numeric',month:'long',day:'numeric'})}</p>}

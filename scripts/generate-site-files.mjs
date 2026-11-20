@@ -17,7 +17,7 @@ async function scan(dir) {
     }
   }
 }
-for (const lang of ['fr', 'es', 'it', 'de']) await copyFile(join(buildDir, lang, '404', 'index.html'), join(buildDir, lang, '404.html'));
+for (const lang of ['zh', 'zh-Hant', 'fr', 'es', 'it', 'de']) await copyFile(join(buildDir, lang, '404', 'index.html'), join(buildDir, lang, '404.html'));
 await scan(buildDir);
 urls.sort();
 const xmlEscape = value => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&apos;');

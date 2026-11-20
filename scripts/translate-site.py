@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup, Comment
 
 ROOT=Path(__file__).resolve().parent.parent
 CF=[str(ROOT/'node_modules/node/bin/node'),str(ROOT/'node_modules/.bin/cf'),'ai','run','@cf/meta/llama-3.3-70b-instruct-fp8-fast']
-langs={'fr':'French','es':'Spanish','it':'Italian','de':'German'}
+langs={'en':'English','fr':'French','es':'Spanish','it':'Italian','de':'German'}
 strings=set()
 def extract(html):
     soup=BeautifulSoup(html or '', 'html.parser')
