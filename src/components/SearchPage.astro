@@ -1,0 +1,204 @@
+---
+import Base from '../layouts/Base.astro';
+import { localPath, searchLabels } from '../i18n.js';
+
+const { lang } = Astro.props;
+const t = searchLabels[lang];
+---
+
+<Base lang={lang} title={`${t.title} - ZHWE`}>
+  <main class="shell content-wrap search-page"
+    data-loading={t.loading}
+    data-empty={t.empty}
+    data-error={t.error}
+    data-results={t.results}
+  >
+    <h1>{t.title}</h1>
+    <form role="search" action={localPath('/search/', lang)} method="get">
+      <label for="search-query">{t.query}</label>
+      <div class="search-controls">
+        <input id="search-query" name="q" type="search" required />
+        <button type="submit">{t.action}</button>
+      </div>
+    </form>
+    <noscript><p>{t.noScript}</p></noscript>
+    <p class="search-status" role="status"></p>
+    <ul class="search-results"></ul>
+    <button type="button" class="search-more" hidden>{t.more}</button>
+  </main>
+</Base>
+
+<script>
+  const page = document.querySelector<HTMLElement>('.search-page')!;
+  const form = page.querySelector<HTMLFormElement>('form')!;
+  const input = page.querySelector<HTMLInputElement>('input')!;
+  const status = page.querySelector<HTMLElement>('.search-status')!;
+  const list = page.querySelector<HTMLUListElement>('.search-results')!;
+  const more = page.querySelector<HTMLButtonElement>('.search-more')!;
+
+  interface SearchResult {
+    data(): Promise<{ url: string; meta: { title: string }; excerpt: string }>;
+  }
+
+  let index: Promise<{
+    search(query: string): Promise<{ results: SearchResult[] }>;
+  }> | undefined;
+  let matches: SearchResult[] = [];
+  let searchId = 0;
+
+  function loadIndex() {
+    // The runtime and index are emitted after Astro finishes the static HTML.
+    const moduleUrl = '/pagefind/pagefind.js';
+    return index ??= import(/* @vite-ignore */ moduleUrl).then(async pagefind => {
+      await pagefind.options({ excerptEllipsis: '…' });
+      await pagefind.init();
+      return pagefind;
+    }).catch(error => {
+      index = undefined;
+      throw error;
+    });
+  }
+
+  async function showResults(id: number, focus = false) {
+    const offset = list.children.length;
+    more.disabled = true;
+    list.setAttribute('aria-busy', 'true');
+    status.textContent = page.dataset.loading!;
+    try {
+      const results = await Promise.all(matches.slice(offset, offset + 10).map(result => result.data()));
+      if (id !== searchId) return;
+
+      const items = results.map(result => {
+        const item = document.createElement('li');
+        const heading = document.createElement('h2');
+        const link = document.createElement('a');
+        link.href = result.url;
+        link.textContent = result.meta.title;
+        heading.append(link);
+        const excerpt = document.createElement('p');
+        // Pagefind escapes the indexed text before inserting its match markup.
+        excerpt.innerHTML = result.excerpt;
+        item.append(heading, excerpt);
+        return item;
+      });
+
+      list.append(...items);
+      if (focus) items[0]?.querySelector('a')?.focus();
+      more.hidden = list.children.length >= matches.length;
+      status.textContent = page.dataset.results!.replace('{count}', matches.length.toLocaleString(document.documentElement.lang));
+    } catch {
+      if (id === searchId) status.textContent = page.dataset.error!;
+    } finally {
+      if (id === searchId) {
+        list.removeAttribute('aria-busy');
+        more.disabled = false;
+      }
+    }
+  }
+
+  async function searchFromUrl() {
+    const id = ++searchId;
+    const query = new URL(location.href).searchParams.get('q')?.trim() ?? '';
+    input.value = query;
+    matches = [];
+    list.replaceChildren();
+    list.removeAttribute('aria-busy');
+    more.hidden = true;
+    status.textContent = '';
+    if (!query) return;
+
+    status.textContent = page.dataset.loading!;
+    try {
+      const pagefind = await loadIndex();
+      const found = await pagefind.search(query);
+      if (id !== searchId) return;
+      matches = found.results;
+      if (matches.length) await showResults(id);
+      else status.textContent = page.dataset.empty!;
+    } catch {
+      if (id === searchId) status.textContent = page.dataset.error!;
+    }
+  }
+
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    const url = new URL(location.href);
+    const query = input.value.trim();
+    if (query) url.searchParams.set('q', query);
+    else url.searchParams.delete('q');
+    if (url.href !== location.href) history.pushState(null, '', url);
+    void searchFromUrl();
+  });
+  more.addEventListener('click', () => void showResults(searchId, true));
+  window.addEventListener('popstate', () => void searchFromUrl());
+  void searchFromUrl();
+</script>
+
+<style>
+  .search-page {
+    max-width: 820px;
+    min-height: 50vh;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin: 0 0 1.25rem;
+    line-height: 1.25;
+  }
+
+  .search-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin-top: .375rem;
+  }
+
+  input, button {
+    min-height: 44px;
+    border: 1px solid var(--line);
+    border-radius: .625rem;
+    padding: .5rem .875rem;
+    background: var(--surface);
+    color: inherit;
+  }
+
+  input {
+    flex: 1 1 10rem;
+    min-width: 0;
+  }
+
+  button { cursor: pointer; }
+  button:hover:not(:disabled) { border-color: currentColor; }
+  button:disabled { cursor: wait; }
+  :focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+
+  .search-results {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow-wrap: anywhere;
+  }
+
+  .search-results :global(li) {
+    padding: 1rem;
+    margin-bottom: .75rem;
+    border: 1px solid var(--line);
+    border-radius: .75rem;
+    background: var(--surface);
+  }
+
+  .search-results :global(h2) {
+    font-size: 1.15rem;
+    margin: 0;
+  }
+
+  .search-results :global(a) { text-decoration: underline; }
+  .search-results :global(a:focus-visible) { outline: 2px solid currentColor; outline-offset: 2px; }
+  .search-results :global(p) { margin: .375rem 0 0; }
+  .search-results :global(mark) {
+    padding: 0 .12em;
+    border-radius: .15em;
+    color: #292437;
+    background: #ffe5a8;
+  }
+</style>

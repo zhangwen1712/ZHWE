@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev --host 127.0.0.1",
-    "build": "astro build && node scripts/generate-site-files.mjs",
+    "build": "astro build && node scripts/generate-site-files.mjs && pagefind --site dist --output-subdir pagefind",
     "preview": "astro preview --host 127.0.0.1",
     "build:pages": "npm run build && node scripts/prepare-pages.mjs"
   },
@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "cf": "^1.0.0-rc.2",
-    "node": "^22.23.4"
+    "node": "^22.23.4",
+    "pagefind": "1.6.0"
   }
 }
