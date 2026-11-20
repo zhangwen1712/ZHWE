@@ -22,6 +22,7 @@ await scan(buildDir);
 urls.sort();
 const xmlEscape = value => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&apos;');
 await writeFile(join(buildDir, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(url => `  <url><loc>${xmlEscape(url)}</loc></url>`).join('\n')}\n</urlset>\n`);
-// Individual HTML pages retain noindex during review; allowing crawling lets robots see it.
-await writeFile(join(buildDir, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${origin}/sitemap.xml\n`);
+// Block all compliant crawlers while the migration preview is under review.
+// Keep page-level noindex separately; robots.txt alone does not guarantee deindexing.
+await writeFile(join(buildDir, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
 console.log(`Generated sitemap with ${urls.length} URLs for ${origin}`);
