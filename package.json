@@ -7,7 +7,9 @@
     "dev": "astro dev --host 127.0.0.1",
     "build": "astro build && node scripts/generate-site-files.mjs && pagefind --site dist --output-subdir pagefind",
     "preview": "astro preview --host 127.0.0.1",
-    "build:pages": "npm run build && node scripts/prepare-pages.mjs"
+    "build:pages": "npm run build && node scripts/prepare-pages.mjs",
+    "check:syntax": "node scripts/check-js-syntax.mjs",
+    "test": "node --test test/*.test.mjs"
   },
   "dependencies": {
     "astro": "^7.4.13",

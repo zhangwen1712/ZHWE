@@ -11,7 +11,7 @@ ASTRO_TELEMETRY_DISABLED=1 npm run build
 ./node_modules/node/bin/node --test test/*.test.mjs
 ```
 
-项目需要 Node.js 22.23.4 或更高版本，开发依赖包含本地 Node 运行时。构建输出在 `dist/`。构建后运行 `npm run preview`，可在 `/search/` 及四种译文的搜索页验证 Pagefind 全文搜索。
+项目需要 Node.js 22.23.4 或更高版本，开发依赖包含本地 Node 运行时。构建输出在 `dist/`。构建后运行 `npm run preview`，可在 `/search/` 及各语言的搜索页验证 Pagefind 全文搜索。
 
 ## 内容与媒体
 
@@ -33,7 +33,7 @@ ASTRO_TELEMETRY_DISABLED=1 npm run build
 
 ## 多语言
 
-英文使用不带语言前缀的根路径，简体中文使用 `/zh/`，繁体中文使用 `/zh-Hant/`，法语、西班牙语、意大利语和德语分别使用 `/fr/`、`/es/`、`/it/`、`/de/` 路径。英文译文尚未完成，缺失部分保留简体中文原文并在文章页提示。网站译文主要来自 Cloudflare Workers AI，少量遗漏经人工补译；译文可能存在误译，应结合原文审核。翻译脚本依赖 `requirements-translation.txt` 中的 Python 包，以及已登录的 `cf` CLI；公开内容更新时运行 `python3 scripts/translate-site.py` 补充译文，再运行 `python3 scripts/generate-locales.py` 生成页面数据；构建前核对翻译覆盖率和原有链接、媒体。
+英文使用不带语言前缀的根路径，简体中文使用 `/zh/`，繁体中文使用 `/zh-Hant/`，法语、西班牙语、意大利语和德语分别使用 `/fr/`、`/es/`、`/it/`、`/de/` 路径。英文译文尚未完成，缺失部分保留简体中文原文并在文章页提示。网站译文主要来自 Cloudflare Workers AI，少量遗漏经人工补译；译文可能存在误译，应结合原文审核。翻译脚本依赖 `requirements-translation.txt` 中的锁定 Python 包，以及已登录的 `cf` CLI；公开内容更新时运行 `python3 scripts/translate-site.py` 补充译文，再运行 `python3 scripts/generate-locales.py` 生成页面数据；构建前核对翻译覆盖率和原有链接、媒体。
 
 建站日志的时间节点从原页面提取到 `migration/milestones.json`，保留原始时间和描述。调整视觉样式时不要增加未经证实的事件。
 
@@ -41,7 +41,7 @@ ASTRO_TELEMETRY_DISABLED=1 npm run build
 
 构建会生成 `sitemap.xml` 和 `robots.txt`，并添加站点图标、网页清单、canonical 和多语言 alternate 标签。当前地址默认为 `https://zhwe-blog.pages.dev`；将来自定义域名启用后，应将构建环境变量 `SITE_URL` 设置为正式网站的 HTTPS 源地址（不含路径），重新构建并核查 sitemap 与 canonical。
 
-审核版页面仍带 `noindex,nofollow`。robots 允许抓取，是为了让搜索引擎能够读取该指令；建立 sitemap 不代表允许收录。正式收录策略应在网站所有者确认后调整。顶层及各语言的 404 页面由 Cloudflare Pages 在路径不存在时返回。
+审核版页面仍带 `noindex,nofollow`。审核版 robots.txt 禁止爬虫抓取；建立 sitemap 不代表允许收录。正式收录策略应在网站所有者确认后调整。顶层及各语言的 404 页面由 Cloudflare Pages 在路径不存在时返回。
 
 ## 足迹与显示偏好
 
@@ -54,3 +54,9 @@ ASTRO_TELEMETRY_DISABLED=1 npm run build
 后续功能迭代从独立分支创建 PR，未经站长明确指示不得合并或直接推送 main。仓库每小时检查 Issue 的本地自动化仅处理 `zhangwen1712` 发布的 Issue。
 
 `translations/zh-Hant-content.json` 是以 OpenCC 生成的繁体内容，已接入繁体页面。重新生成需安装 `opencc-python-reimplemented` 并运行 `python3 scripts/generate-traditional.py`；英文正文翻译需在翻译服务配额恢复后补全并核对覆盖率。
+
+## 自动检查
+
+GitHub Actions 在 PR、主分支更新及手动运行时执行 JavaScript 语法、构建、测试、翻译覆盖率、生成文件一致性和 npm 高危依赖检查。PR 比较目标分支的原文与翻译字典：现存缺失译文会在运行摘要中报告；新增原文缺少对应翻译、删除已有译文或提交空译文会使检查失败。覆盖率表示原文是否有非空字典映射，并不能判断翻译质量；未改变的词条可能是名称或本来就是英文。繁体中文通过生成一致性和原文链接、数据完整性测试检查。
+
+本地运行：`npm ci`，`python3 -m pip install -r requirements-translation.txt`，`npm run check:syntax`，`python3 scripts/check-translation-coverage.py --base HEAD`，`python3 scripts/generate-locales.py`，`python3 scripts/generate-traditional.py`，`ASTRO_TELEMETRY_DISABLED=1 npm run build:pages`，`npm test`，`python3 -m unittest discover -s test -p '*_test.py'` 和 `npm audit --audit-level=high`。提交前检查生成的翻译文件差异。CI 不自动合并或部署。
