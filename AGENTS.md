@@ -4,7 +4,9 @@
 - 通过 GitHub CLI 管理 GitHub 仓库。正式域名由站点所有者配置，不要擅自切换。
 - 尊重网站原文：未经用户要求不得编写或改写个人介绍、标语、文章、评论或时间线事实；视觉调整不得删除内容。
 - WordPress 草稿不得提交到公开仓库。历史评论仅展示公开内容，不提交邮件、IP 等私密数据。
-- 保持英文根路径以及 `/zh/`、`/zh-Hant/`、`/fr/`、`/es/`、`/it/`、`/de/` 对应路由，保留原始文章路径结构。更新内容时同步四种翻译，保留链接、媒体和原有结构；机器翻译应明确可追溯，并检查覆盖率。
+- 保持英文根路径以及 `/zh/`、`/zh-Hant/`、`/fr/`、`/es/`、`/it/`、`/de/` 对应路由，保留原始文章路径结构。更新公开内容时维护英文、法文、西班牙文、意大利文、德文译文及繁体内容，保留原意、链接、媒体和原有结构；机器翻译须记录来源并核对事实，不得添加原文没有的细节。
+- 标题、摘要、正文、公开评论和建站日志须按页面检查翻译完整性；译文不完整时保留整页简体中文回退，不得发布中外文混杂的正文。覆盖率和页面就绪报告只检查映射及残留文字，不代表译文质量；抽查含人名、地名、数字和日期的译文。
+- 更新译文后运行 `python3 scripts/generate-locales.py`，按需运行 `python3 scripts/generate-traditional.py`，并执行 `python3 scripts/check-translation-coverage.py --base <基准提交>` 和 `python3 scripts/report-page-translations.py`。`translate-site.py` 只补不存在的词条，不覆盖已有译文，也不提取建站日志词条；残留中日文的已有译文及日志遗漏需另外核对和处理。
 - 更新网站后运行 `ASTRO_TELEMETRY_DISABLED=1 npm run build:pages`、相关测试及移动端检查。Pages 审核站保持 noindex，除非用户明确要求更改。
 - 两个超出 Pages 单文件限制的视频在审核版暂时从旧站加载；不要删除仓库中的本地原件。新评论服务尚未部署，不得声称已上线。
 - 维护 `robots.txt`、sitemap、站点图标、canonical 与语言 alternate。构建基准地址由 `SITE_URL` 决定，默认 Pages 审核域名；正式域名启用时同步调整并验证。不要误把 404 或媒体文件列入 sitemap。
