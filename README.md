@@ -33,7 +33,16 @@ ASTRO_TELEMETRY_DISABLED=1 npm run build
 
 ## 多语言
 
-英文使用不带语言前缀的根路径，简体中文使用 `/zh/`，繁体中文使用 `/zh-Hant/`，法语、西班牙语、意大利语和德语分别使用 `/fr/`、`/es/`、`/it/`、`/de/` 路径。各页面按语言独立检查翻译完整性：标题、摘要、正文、公开评论及建站日志内容全部存在对应译文且译文没有残留中日文字时才显示译文，否则整篇使用简体中文原文并在页面提示。截至 2026-11-21，英文及法、西、意、德语的现有公开内容字典覆盖率为 100%；本次增补使用 Cloudflare Workers AI 的 `@cf/meta/llama-3.3-70b-instruct-fp8-fast`，并对部分译文进行了人工修正。网站译文主要来自 Cloudflare Workers AI，少量遗漏经人工补译；译文可能存在误译，应结合原文审核。翻译脚本依赖 `requirements-translation.txt` 中的 Python 包，以及已登录的 `cf` CLI；公开内容更新时运行 `python3 scripts/translate-site.py` 补充译文，再运行 `python3 scripts/generate-locales.py` 生成页面数据；构建前核对翻译覆盖率和原有链接、媒体。
+英文使用不带语言前缀的根路径，简体中文使用 `/zh/`，繁体中文使用 `/zh-Hant/`，法语、西班牙语、意大利语和德语分别使用 `/fr/`、`/es/`、`/it/`、`/de/` 路径。各页面按语言独立检查翻译完整性：标题、摘要、正文、公开评论及建站日志内容全部存在对应译文且译文没有残留中日文字时才显示译文，否则整篇使用简体中文原文并在页面提示。
+
+截至 2026-11-21，英文及法、西、意、德语各有 764/764 个来源词条存在字典映射，91/91 个公开页面通过完整性判定；这是当时的检查结果，内容变更后应重新统计。译文主要来自 Cloudflare Workers AI，其中 2026-11-21 增补使用 `@cf/meta/llama-3.3-70b-instruct-fp8-fast`，并对部分译文进行了人工修正。覆盖率不代表翻译准确，仍需结合原文核对，尤其是人名、地名、数字和日期。
+
+维护公开内容时：
+
+1. 更新 `migration/` 中的原文后，维护 `translations/{en,fr,es,it,de}.json` 中的对应译文，保持原意及链接、媒体结构。`python3 scripts/translate-site.py` 可借助已登录的 `cf` CLI 补译缺失词条，依赖 `requirements-translation.txt` 中的 Python 包。
+2. 该脚本只补不存在的词条，不会修正已有但仍包含中日文的译文，也不会提取 `migration/milestones.json`；这些内容需要另行核对并补齐。机器译文需要审阅并记录来源。
+3. 运行 `python3 scripts/generate-locales.py` 生成五种外语页面数据；原文变更时按需运行 `python3 scripts/generate-traditional.py` 生成繁体数据。
+4. 使用 `python3 scripts/check-translation-coverage.py --base <基准提交>` 与 `python3 scripts/report-page-translations.py` 检查覆盖率和页面回退状态，再构建并检查链接和媒体。检查通过不等于完成语义校对。
 
 建站日志的时间节点从原页面提取到 `migration/milestones.json`，保留原始时间和描述。调整视觉样式时不要增加未经证实的事件。友情链接的卡片基于原始内容结构呈现，保留原文和链接；日志滚动动画遵循系统减少动态效果设置。
 
@@ -68,4 +77,4 @@ ASTRO_TELEMETRY_DISABLED=1 npm run build
 
 `Advisory site reports` 每周及手动触发时运行，生成外链和媒体、手机端 axe 无障碍及 Lighthouse 报告；第三方限流、网络波动和实验室分数不会阻止 PR。报告在 Actions 摘要和短期保存的 artifact 中查看，自动扫描不能取代人工审核。
 
-本地执行：`npm ci`、`python3 -m pip install -r requirements-translation.txt`、`npm run check:syntax`、`python3 scripts/check-translation-coverage.py --base HEAD`、`python3 scripts/report-page-translations.py`、`python3 scripts/generate-locales.py`、`python3 scripts/generate-traditional.py`、`ASTRO_TELEMETRY_DISABLED=1 npm run build:pages`、`python3 scripts/check-site-integrity.py`、`BASE_SHA=HEAD python3 scripts/check-content-integrity.py`、`npm test`、`python3 -m unittest discover -s test -p '*_test.py'`、`npx playwright install chromium`、`npm run test:browser` 和 `npm audit --audit-level=high`。CI 不自动合并或部署；是否阻止合并由仓库分支保护规则决定。
+本地执行：`npm ci`、`python3 -m pip install -r requirements-translation.txt`、`npm run check:syntax`、`python3 scripts/check-translation-coverage.py --base HEAD`、`python3 scripts/report-page-translations.py`、`python3 scripts/generate-locales.py`、`python3 scripts/generate-traditional.py`、`ASTRO_TELEMETRY_DISABLED=1 npm run build:pages`、`python3 scripts/check-site-integrity.py`、`BASE_SHA=HEAD python3 scripts/check-content-integrity.py`、`npm test`、`python3 -m unittest discover -s test -p '*_test.py'`、`npx playwright install chromium`、`npm run test:browser` 和 `npm audit --audit-level=high`。CI 不自动合并；连接 Cloudflare Pages 的 PR 可能自动生成预览部署，是否阻止合并由仓库分支保护规则决定。正式发布仍以站长审核和合并为前提。
