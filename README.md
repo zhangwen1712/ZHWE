@@ -33,7 +33,7 @@ ASTRO_TELEMETRY_DISABLED=1 npm run build
 
 ## 多语言
 
-英文使用不带语言前缀的根路径，简体中文使用 `/zh/`，繁体中文使用 `/zh-Hant/`，法语、西班牙语、意大利语和德语分别使用 `/fr/`、`/es/`、`/it/`、`/de/` 路径。各页面按语言独立检查翻译完整性：标题、摘要、正文、公开评论及建站日志内容全部存在对应译文且译文没有残留中日文字时才显示译文，否则整篇使用简体中文原文并在页面提示。英文仍有未完成内容。网站译文主要来自 Cloudflare Workers AI，少量遗漏经人工补译；译文可能存在误译，应结合原文审核。翻译脚本依赖 `requirements-translation.txt` 中的 Python 包，以及已登录的 `cf` CLI；公开内容更新时运行 `python3 scripts/translate-site.py` 补充译文，再运行 `python3 scripts/generate-locales.py` 生成页面数据；构建前核对翻译覆盖率和原有链接、媒体。
+英文使用不带语言前缀的根路径，简体中文使用 `/zh/`，繁体中文使用 `/zh-Hant/`，法语、西班牙语、意大利语和德语分别使用 `/fr/`、`/es/`、`/it/`、`/de/` 路径。各页面按语言独立检查翻译完整性：标题、摘要、正文、公开评论及建站日志内容全部存在对应译文且译文没有残留中日文字时才显示译文，否则整篇使用简体中文原文并在页面提示。截至 2026-11-21，英文及法、西、意、德语的现有公开内容字典覆盖率为 100%；本次增补使用 Cloudflare Workers AI 的 `@cf/meta/llama-3.3-70b-instruct-fp8-fast`，并对部分译文进行了人工修正。网站译文主要来自 Cloudflare Workers AI，少量遗漏经人工补译；译文可能存在误译，应结合原文审核。翻译脚本依赖 `requirements-translation.txt` 中的 Python 包，以及已登录的 `cf` CLI；公开内容更新时运行 `python3 scripts/translate-site.py` 补充译文，再运行 `python3 scripts/generate-locales.py` 生成页面数据；构建前核对翻译覆盖率和原有链接、媒体。
 
 建站日志的时间节点从原页面提取到 `migration/milestones.json`，保留原始时间和描述。调整视觉样式时不要增加未经证实的事件。友情链接的卡片基于原始内容结构呈现，保留原文和链接；日志滚动动画遵循系统减少动态效果设置。
 
@@ -53,7 +53,7 @@ ASTRO_TELEMETRY_DISABLED=1 npm run build
 
 后续功能迭代从独立分支创建 PR，未经站长明确指示不得合并或直接推送 main。仓库每小时检查 Issue 的本地自动化仅处理 `zhangwen1712` 发布的 Issue。
 
-`translations/zh-Hant-content.json` 是以 OpenCC 生成的繁体内容，已接入繁体页面。重新生成需安装 `opencc-python-reimplemented` 并运行 `python3 scripts/generate-traditional.py`；英文正文翻译需在翻译服务配额恢复后补全并核对覆盖率。
+`translations/zh-Hant-content.json` 是以 OpenCC 生成的繁体内容，已接入繁体页面。重新生成需安装 `opencc-python-reimplemented` 并运行 `python3 scripts/generate-traditional.py`；内容变更后应重新核对各语言的覆盖率与页面完整性。
 
 ## 自动检查
 

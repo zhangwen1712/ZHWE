@@ -19,12 +19,12 @@ for(const lang of ['en','fr','es','it','de'])test(`${lang} preserves all publish
  assert.equal(localPath('/about/',lang),lang==='en'?'/about/':`/${lang}/about/`);
 });
 
-test('incomplete English pages use complete original text, while complete pages remain translated',()=>{
+test('English pages either use the complete original or a complete translation',()=>{
  const data=read('../translations/en-content.json');
- const incomplete=data['published-posts'].find(x=>x.link.includes('2025/06/01'));
- const original=posts.find(x=>x.id===incomplete.id);
- assert.equal(incomplete.translationComplete,false);
- for(const field of ['title','excerpt','content'])assert.equal(incomplete[field].rendered,original[field].rendered,field);
+ for(const incomplete of data['published-posts'].filter(x=>!x.translationComplete)){
+  const original=posts.find(x=>x.id===incomplete.id);
+  for(const field of ['title','excerpt','content'])assert.equal(incomplete[field].rendered,original[field].rendered,field);
+ }
  const complete=data['published-posts'].filter(x=>x.translationComplete);
  assert.ok(complete.length>0,'expected at least one fully translated post');
  assert.ok(complete.some(x=>x.title.rendered!==posts.find(p=>p.id===x.id).title.rendered || x.content.rendered!==posts.find(p=>p.id===x.id).content.rendered));

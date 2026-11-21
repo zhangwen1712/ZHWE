@@ -6,7 +6,7 @@ import posts from '../migration/published-posts.json' with { type: 'json' };
 const dist = new URL('../dist/', import.meta.url);
 const read = path => readFile(new URL(path, dist), 'utf8');
 const cases = [
-  { lang: 'en', prefix: '', query: '端午假期', title: '端午假期' },
+  { lang: 'en', prefix: '', query: 'Dragon Boat Festival holiday', title: 'Dragon Boat Festival holiday' },
   { lang: 'zh-Hant', prefix: 'zh-Hant/', query: '端午假期', title: '端午假期' },
   { lang: 'zh-CN', prefix: 'zh/', query: '端午假期', title: '端午假期' },
   { lang: 'fr', prefix: 'fr/', query: 'vacances du Dragon Boat', title: 'Les vacances du Dragon Boat' },
