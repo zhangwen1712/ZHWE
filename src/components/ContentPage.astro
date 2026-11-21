@@ -23,6 +23,7 @@ const fallbackMessage = {en:'This page is shown in Chinese until its translation
 const hasNext = page && page !== Math.ceil(localizedPosts.length / POSTS_PER_PAGE);
 const cover=kind==='post' ? item?.image?.replace('https://zhwe.top/wp-content/uploads/', '/wp-content/uploads/') : null;
 const title=item?.title?.rendered||term?.name||`${t.posts} ${page}`;
+const imageViewerLabels={en:['Enlarge image','Close image'],zh:['放大图片','关闭图片'],'zh-Hant':['放大圖片','關閉圖片'],fr:['Agrandir l’image','Fermer l’image'],es:['Ampliar imagen','Cerrar imagen'],it:['Ingrandisci immagine','Chiudi immagine'],de:['Bild vergrößern','Bild schließen']}[lang];
 ---
 <Base lang={lang} title={`${title} - ZHWE`}>
   <main class="shell content-wrap">
@@ -36,6 +37,10 @@ const title=item?.title?.rendered||term?.name||`${t.posts} ${page}`;
       </div>
       {postComments.length > 0 && <section class="comments"><h2>{t.comments}</h2><ol lang={translationFallback ? "zh-CN" : undefined}>{postComments.filter(c => c.parent === 0).map(comment => <Comment comment={comment} comments={postComments} lang={translationFallback ? "zh" : lang} />)}</ol></section>}
       {kind === 'post' && <CommentForm postId={item.id} lang={lang} />}
+      <dialog class="image-viewer" data-enlarge-label={imageViewerLabels[0]} aria-label={imageViewerLabels[0]}>
+        <button type="button" class="image-viewer-close" aria-label={imageViewerLabels[1]}>×</button>
+        <img alt="" />
+      </dialog>
     </article>}
     {!item && <section>
       <h1 set:html={title} />
@@ -47,3 +52,6 @@ const title=item?.title?.rendered||term?.name||`${t.posts} ${page}`;
     </section>}
   </main>
 </Base>
+<script>
+  import '../lib/article-images.js';
+</script>

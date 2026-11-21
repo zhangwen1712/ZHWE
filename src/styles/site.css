@@ -68,3 +68,20 @@ a,button{transition:color .2s ease,background-color .2s ease,border-color .2s ea
 @supports (animation-timeline:view()){@media(prefers-reduced-motion:no-preference){.milestone-card{animation:milestone-appear both linear;animation-timeline:view();animation-range:entry 0% entry 70%}}}
 @keyframes milestone-appear{from{opacity:.5;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){.friend-links>.wp-block-columns,.milestone-card{transition:none}.friend-links>.wp-block-columns:hover,.milestone-card:hover{transform:none}}
+
+/* The WordPress image controls need a local viewer on the static site. */
+.entry-content .wp-lightbox-container{position:relative;width:fit-content;max-width:100%}
+.entry-content .wp-lightbox-container.aligncenter{margin-inline:auto}
+.entry-content .wp-lightbox-container .lightbox-trigger{display:none}
+.entry-content .wp-lightbox-container.image-viewer-ready .lightbox-trigger{display:grid;place-items:center;position:absolute;top:10px;right:10px;width:40px;height:40px;padding:0;border:0;border-radius:50%;background:#17151bc9;cursor:pointer}
+.entry-content .lightbox-trigger:hover,.entry-content .lightbox-trigger:focus-visible{background:#17151b;outline:2px solid white;outline-offset:2px}
+.entry-content .lightbox-trigger svg{width:16px;height:16px}
+.image-viewer{position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:56px 16px 16px;border:0;background:#15131cf2}
+.image-viewer[open]{display:grid;place-items:center}
+.image-viewer::backdrop{background:#0e0c12c9}
+.image-viewer img{max-width:100%;max-height:calc(100dvh - 80px);width:auto;height:auto;object-fit:contain}
+.image-viewer-close{position:absolute;top:12px;right:16px;width:40px;height:40px;border:1px solid #ffffff80;border-radius:50%;background:#24212bd9;color:white;font-size:28px;line-height:1;cursor:pointer}
+.image-viewer-close:focus-visible{outline:2px solid white;outline-offset:2px}
+.entry-content :is(video,audio,iframe,table){max-width:100%}
+.entry-content :is(pre,table){display:block;overflow-x:auto}
+@media(max-width:700px){.entry-content .wp-block-columns{display:flex;flex-wrap:wrap;gap:1rem}.entry-content .wp-block-columns>.wp-block-column{flex:1 1 100%;min-width:0}.friend-links>.wp-block-columns{display:grid}}
