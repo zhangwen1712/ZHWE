@@ -1,7 +1,7 @@
 import { copyFile, readdir, writeFile } from 'node:fs/promises';
 import { join, relative, sep } from 'node:path';
 const buildDir = 'dist';
-const configured = new URL(process.env.SITE_URL || 'https://zhwe-blog.pages.dev');
+const configured = new URL(process.env.SITE_URL || 'https://zhwe.top');
 if (!['http:', 'https:'].includes(configured.protocol) || configured.pathname !== '/' || configured.search || configured.hash) throw new Error('SITE_URL must be an http(s) origin without a path');
 const origin = configured.origin;
 const urls = [];
@@ -22,7 +22,6 @@ await scan(buildDir);
 urls.sort();
 const xmlEscape = value => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&apos;');
 await writeFile(join(buildDir, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(url => `  <url><loc>${xmlEscape(url)}</loc></url>`).join('\n')}\n</urlset>\n`);
-// Block all compliant crawlers while the migration preview is under review.
-// Keep page-level noindex separately; robots.txt alone does not guarantee deindexing.
-await writeFile(join(buildDir, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
+// Allow crawlers now that the owner has opened the site to search engines.
+await writeFile(join(buildDir, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${origin}/sitemap.xml\n`);
 console.log(`Generated sitemap with ${urls.length} URLs for ${origin}`);

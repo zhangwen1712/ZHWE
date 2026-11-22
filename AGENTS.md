@@ -8,9 +8,9 @@
 - 保持英文根路径以及 `/zh/`、`/zh-Hant/`、`/fr/`、`/es/`、`/it/`、`/de/` 对应路由，保留原始文章路径结构。更新公开内容时维护英文、法文、西班牙文、意大利文、德文译文及繁体内容，保留原意、链接、媒体和原有结构；机器翻译须记录来源并核对事实，不得添加原文没有的细节。
 - 标题、摘要、正文、公开评论和建站日志须按页面检查翻译完整性；译文不完整时保留整页简体中文回退，不得发布中外文混杂的正文。覆盖率和页面就绪报告只检查映射及残留文字，不代表译文质量；抽查含人名、地名、数字和日期的译文。
 - 更新译文后运行 `python3 scripts/generate-locales.py`，按需运行 `python3 scripts/generate-traditional.py`，并执行 `python3 scripts/check-translation-coverage.py --base <基准提交>` 和 `python3 scripts/report-page-translations.py`。`translate-site.py` 只补不存在的词条，不覆盖已有译文，也不提取建站日志词条；残留中日文的已有译文及日志遗漏需另外核对和处理。
-- 更新网站后运行 `ASTRO_TELEMETRY_DISABLED=1 npm run build:pages`、相关测试及移动端检查。Pages 审核站保持 noindex，除非用户明确要求更改。
+- 更新网站后运行 `ASTRO_TELEMETRY_DISABLED=1 npm run build:pages`、相关测试及移动端检查。站点已开放收录，页面输出 `index,follow`，`robots.txt` 使用 `Allow: /`；如需再次屏蔽，仅在站长明确指示后调整。
 - 两个超出 Pages 单文件限制的视频在审核版暂时从旧站加载；不要删除仓库中的本地原件。正式评论服务已启用；不得将预览环境绑定正式评论数据库。
-- 维护 `robots.txt`、sitemap、站点图标、canonical 与语言 alternate。构建基准地址由 `SITE_URL` 决定，默认 Pages 审核域名；正式域名启用时同步调整并验证。不要误把 404 或媒体文件列入 sitemap。
+- 维护 `robots.txt`、sitemap、站点图标、canonical 与语言 alternate。构建基准地址由 `SITE_URL` 决定，默认正式域名 `https://zhwe.top`；变更时同步验证 canonical、hreflang 与 sitemap。不要误把 404 或媒体文件列入 sitemap。
 - 保持顶层 `404.html`，以免 Pages 将所有未知路径当作单页应用返回 200；部署后同时验证普通页面 200、未知路径与不存在的静态资源 404。
 - 文章地图的数据在 `migration/article-locations.json`：位置必须有文章证据或用户确认，城市坐标仅表示近似位置；不把歌曲、新闻和服务器所在地当作实际旅行。到访区域使用 `public/map/visited-regions.geojson` 中的行政边界高亮，维护数据来源及 `licenses/map-data-attribution.md`。进入地图时可请求访客定位权限；未经浏览器授权不得获取位置，距离与连线只在浏览器本地计算。平遥是站长确认的家乡。
 - 保持页脚浅色、深色、随系统选项，以及语言“用户选择优先、浏览器语言次之”的规则。不要破坏已有偏好的迁移。

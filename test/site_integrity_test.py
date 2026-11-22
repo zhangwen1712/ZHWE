@@ -7,7 +7,7 @@ from pathlib import Path
 
 SCRIPT=Path(__file__).resolve().parents[1]/'scripts/check-site-integrity.py'
 LANGS={'en':'','zh-CN':'zh','zh-Hant':'zh-Hant','fr':'fr','es':'es','it':'it','de':'de','x-default':''}
-ORIGIN='https://zhwe-blog.pages.dev'
+ORIGIN='https://zhwe.top'
 
 class SiteIntegrityTests(unittest.TestCase):
     def setUp(self):
@@ -15,13 +15,13 @@ class SiteIntegrityTests(unittest.TestCase):
         for directory in ('scripts','ci','dist'): (self.root/directory).mkdir()
         shutil.copy(SCRIPT,self.root/'scripts/check-site-integrity.py')
         (self.root/'ci/known-missing-internal.json').write_text('[]')
-        (self.root/'dist/robots.txt').write_text('User-agent: *\nDisallow: /\n')
+        (self.root/'dist/robots.txt').write_text('User-agent: *\nAllow: /\nSitemap: https://zhwe.top/sitemap.xml\n')
         (self.root/'dist/sitemap.xml').write_text(f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>{ORIGIN}/</loc></url></urlset>')
         alternates=''.join(f'<link rel="alternate" hreflang="{lang}" href="{ORIGIN}/{prefix+"/" if prefix else ""}">' for lang,prefix in LANGS.items())
         for prefix in set(LANGS.values()):
             directory=self.root/'dist'/prefix;directory.mkdir(exist_ok=True)
             path=f'/{prefix}/' if prefix else '/'
-            (directory/'index.html').write_text(f'<meta name="robots" content="noindex,nofollow"><link rel="canonical" href="{ORIGIN}{path}">{alternates}<a href="/">Home</a>')
+            (directory/'index.html').write_text(f'<meta name="robots" content="index,follow"><link rel="canonical" href="{ORIGIN}{path}">{alternates}<a href="/">Home</a>')
 
     def tearDown(self):self.tmp.cleanup()
     def run_audit(self):return subprocess.run(['python3',str(self.root/'scripts/check-site-integrity.py')],capture_output=True,text=True)

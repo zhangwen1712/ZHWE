@@ -17,7 +17,7 @@ ASTRO_TELEMETRY_DISABLED=1 npm run build
 
 `migration/` 包含已公开的文章、页面、分类、标签、历史评论及媒体清单。WordPress 草稿不放入此公开仓库。原路径保留；`public/wp-content/uploads/` 包含媒体库原文件和正文使用的文件。为减少重复，不保留全部自动生成的缩略图。`migration/assets-manifest.json` 列出已下载文件。
 
-《毕业》中的首个程序保存在 `public/2021/07/09/毕业/first-program/`，`N03.html` 和 6 个图片文件保持原始内容；文章各语言版本指向同一份作品，原 WordPress 导出内容保留原始链接。作品保持原有页面和文案，审核版通过响应头阻止索引。《毕业》中的另一个实训项目并未包含在此次提供的 ZIP 中。
+《毕业》中的首个程序保存在 `public/2021/07/09/毕业/first-program/`，`N03.html` 和 6 个图片文件保持原始内容；文章各语言版本指向同一份作品，原 WordPress 导出内容保留原始链接。作品保持原有页面和文案。《毕业》中的另一个实训项目并未包含在此次提供的 ZIP 中。
 
 文章中保留的 WordPress 图片放大按钮使用本站的图片查看器，支持键盘关闭；浏览器未启用 JavaScript 时图片仍可正常阅读，放大按钮不显示。
 
@@ -44,15 +44,15 @@ node scripts/comments-backup.mjs /仓库外的私密目录/评论备份.json
 
 备份命令只写仓库外尚不存在的文件，权限为 `0600`，包含待审核和已拒绝内容但不包含限流指纹；输出或传输时仍需保护隐私。导出期间并发的审核或删除可能使内容不是同一时刻的快照；已验证从本地备份恢复到临时内存数据库；Cloudflare D1 完整恢复演练尚未进行。每日自动备份已按站长要求暂停；如需新备份可手动运行上述命令。删除数据库中的评论不会自动删除已有备份中的副本。
 
-**当前已使用正式域名，但仍处迁移验收阶段。** 外部失效图片、复杂区块、原有页面交互、SEO、移动端及历史内容仍需核对，回滚方案也需保留。域名上线不代表已经开放搜索引擎收录；当前模板仍输出 `noindex,nofollow`，构建时生成的 `robots.txt` 仍为全站 `Disallow: /`，只有站长明确确认后才调整。
+**当前已使用正式域名，但仍处迁移验收阶段。** 外部失效图片、复杂区块、原有页面交互、移动端及历史内容仍需核对，回滚方案也需保留。站长已确认开放搜索引擎收录：页面输出 `index,follow`，`robots.txt` 改为 `Allow: /` 并在其中声明 sitemap。
 
 ## Cloudflare Pages 部署
 
 - **正式域名**：`https://zhwe.top/`（站长于 2026-11-22 确认已部署）。**Pages 预览域名**：`https://zhwe-blog.pages.dev/`。运行 `npm run build:pages` 构建，静态输出目录为 `dist/`。
-- **构建基准地址**：`astro.config.mjs` 和 `scripts/generate-site-files.mjs` 在未设置 `SITE_URL` 时仍默认使用 `https://zhwe-blog.pages.dev`。正式域名部署需要在 Cloudflare 构建环境明确设置 `SITE_URL=https://zhwe.top` 并重新部署；当前环境变量实际值尚未在仓库中验证。否则 canonical、hreflang、Open Graph URL 和 sitemap 可能仍指向预览域名。
+- **构建基准地址**：`astro.config.mjs` 和 `scripts/generate-site-files.mjs` 现在默认使用 `https://zhwe.top`；`SITE_URL` 仍可覆盖，用于预览环境。canonical、hreflang、Open Graph URL 和 sitemap 都基于该地址生成。
 - **大视频**：Pages 构建会移除两个超过单文件限制的视频，并将文章内引用改为 `https://zhwe.top/wp-content/uploads/...`。既然 `zhwe.top` 已指向新站，不能再假定旧域名能提供这些文件；应迁移到 R2 或其他可持续访问的媒体地址，并修正引用。GitHub 中仍保留原文件。
 - **评论**：正式环境已按站长指示启用评论服务，独立 D1 与 Turnstile 已验证，预览环境未绑定正式评论数据库。部署静态页面本身不会启用新评论；评论功能依赖正式环境的 D1 绑定、Turnstile 配置和 Pages Function。
-- **收录策略**：当前仍处迁移核验期，生成页面保留 `noindex,nofollow`，`robots.txt` 保留 `Disallow: /`；**不要因为绑定正式域名就自动取消屏蔽**。
+- **收录策略**：站长已确认开放收录，页面输出 `index,follow`，`robots.txt` 为 `Allow: /` 并声明 sitemap；旧的首个程序作品页也已移除 noindex 响应头。
 
 部署后应核对正式域名的首页、文章与多语言路径、`/search/`、`/robots.txt`、`/sitemap.xml`、canonical、hreflang、图片和两个大视频的响应，并检查 Pages 构建日志、评论提交及回滚机制。
 
@@ -73,9 +73,9 @@ node scripts/comments-backup.mjs /仓库外的私密目录/评论备份.json
 
 ## 搜索引擎与基础文件
 
-构建会生成 `sitemap.xml` 和 `robots.txt`，并添加站点图标、网页清单、canonical 和多语言 alternate 标签。**正式访问地址为 `https://zhwe.top/`**。由于源码仍以 `https://zhwe-blog.pages.dev` 作为 `SITE_URL` 的默认值，自定义域名虽已绑定，仍须确认 Cloudflare 正式构建环境已设置 `SITE_URL=https://zhwe.top`（不含结尾路径），并检查实际构建产物中的 sitemap、canonical 与 hreflang；不应仅因自定义域名已绑定就假定这些地址已更新。
+构建会生成 `sitemap.xml` 和 `robots.txt`，并添加站点图标、网页清单、canonical 和多语言 alternate 标签。**正式访问地址为 `https://zhwe.top/`**。`astro.config.mjs` 与 `scripts/generate-site-files.mjs` 默认使用这个地址，`SITE_URL` 可覆盖；已检查构建产物中的 sitemap、canonical 与 hreflang 指向正式域名。
 
-迁移核验期间，当前页面模板仍输出 `noindex,nofollow`，生成的 `robots.txt` 使用 `User-agent: *` 与 `Disallow: /`，包括正式域名在内的部署均不应在未经授权时开放抓取。建立 sitemap 不代表允许收录。正式收录策略仅在站长明确确认后调整。顶层及各语言的 404 页面由 Cloudflare Pages 在路径不存在时返回。
+站长已确认开放收录：页面输出 `index,follow`，生成的 `robots.txt` 使用 `User-agent: *`、`Allow: /` 并声明 sitemap。建立 sitemap 只是入口，仍需在搜索引擎中检查实际收录状态。顶层及各语言的 404 页面由 Cloudflare Pages 在路径不存在时返回。
 
 ## 足迹与显示偏好
 
@@ -95,7 +95,7 @@ node scripts/comments-backup.mjs /仓库外的私密目录/评论备份.json
 
 - 代码语法、补丁空白、Pages 构建与自动测试。
 - 公开文章、页面、历史评论和媒体 ID 与基准分支比较；文章原始 URL 和已有媒体引用被移除时失败。
-- 所有语言的站内链接、媒体、canonical、hreflang、sitemap、审核站 noindex 和 robots；已知 14 个历史失效路径记录在 `ci/known-missing-internal.json`，新增失效路径会失败。修复历史路径后从基线移除。
+- 所有语言的站内链接、媒体、canonical、hreflang、sitemap、页面 robots meta 和 robots.txt；已知 14 个历史失效路径记录在 `ci/known-missing-internal.json`，新增失效路径会失败。修复历史路径后从基线移除。
 - 译文字典覆盖率、生成文件一致性和页面完整度摘要。已有未完成译文仅报告，新增缺失或删除已有译文会失败；整页回退功能尚未进入主分支时会明确报告未启用，进入主分支后检查实际回退结果。字典映射不代表翻译质量。
 - Playwright 以手机视口检查分页、语言与主题、搜索、友链、日志、404、定位拒绝和模拟授权后的距离排序。定位只用测试坐标。
 - `npm audit` 检查高危依赖，PR 额外使用 GitHub Dependency Review 检查新增依赖。

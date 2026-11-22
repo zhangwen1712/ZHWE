@@ -1,3 +1,3 @@
 import { defineConfig } from 'astro/config';
-// The review deployment uses pages.dev until the owner connects the custom domain.
-export default defineConfig({ site: process.env.SITE_URL || 'https://zhwe-blog.pages.dev', trailingSlash: 'always' });
+// Production uses the custom domain; SITE_URL can still override it for previews.
+export default defineConfig({ site: process.env.SITE_URL || 'https://zhwe.top', trailingSlash: 'always' });

@@ -64,6 +64,11 @@
       "date": "2025年1月18日",
       "title": "服务器迁移",
       "description": "迁移服务到 美国犹他州普若佛"
+    },
+    {
+      "date": "2026年11月22日",
+      "title": "迁移到 Astro + Cloudflare Pages",
+      "description": "站点从 WordPress 迁移为 Astro 静态站并部署到 Cloudflare Pages：内容与媒体导出为 migration/ 下的 JSON，保留原文章路径；历史评论静态展示，新评论使用独立 D1 与 Turnstile；新增多语言、Pagefind 搜索与足迹地图。迁移耗时 3 小时。"
     }
   ],
   "remainingHtml": "\n\n<p class=\"wp-block-paragraph\">目前服务器在美国犹他州普若佛托管CDN提供商为Cloudflare。<a href=\"https://zhwe.top/cdn-cgi/trace\" rel=\"nofollow\">CDN追踪</a></p>\n<p class=\"wp-block-paragraph\"><a href=\"https://radar.cloudflare.com/scan/192af9c5-2637-4087-b53c-38fae7ff7a2b/summary\" rel=\"noreferrer noopener\" target=\"_blank\">Cloudflare Radar</a></p>\n<h2 class=\"wp-block-heading\">更新日志</h2>\n<p class=\"wp-block-paragraph\">2024年7月12日</p>\n<p class=\"wp-block-paragraph\">备份服务改为UpdraftPlus Backup/Restore，文件传入FTP服务器</p>\n<p class=\"wp-block-paragraph\">2024年7月14日</p>\n<p class=\"wp-block-paragraph\">无法解决Bravade主题主页文章列表的格式错乱故更换主题为<a href=\"https://wordpress.org/themes/bloglo/\" rel=\"noreferrer noopener\" target=\"_blank\">Bloglo</a></p>\n<p class=\"wp-block-paragraph\">2024年7月15日</p>\n<p class=\"wp-block-paragraph\">卸载非必要插件提高运行速度</p>\n<p class=\"wp-block-paragraph\">2024年9月19日</p>\n<p class=\"wp-block-paragraph\">深浅模式跟随系统切换</p>\n<p class=\"wp-block-paragraph\">2024年11月16日</p>\n<p class=\"wp-block-paragraph\">更新缓存规则，动态html将从CDN获取</p>\n<p class=\"has-text-align-right wp-block-paragraph\" style=\"font-size:14px\"><em>loction：</em>北京</p>\n<div class=\"wp-block-post-date__modified-date has-text-align-right wp-block-post-date\" style=\"font-size:14px\"><time datetime=\"2025-08-10T09:17:31+08:00\">Aug 10, 2025 9:17 AM</time></div>"
