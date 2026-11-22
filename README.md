@@ -23,7 +23,7 @@ ASTRO_TELEMETRY_DISABLED=1 npm run build
 
 ## 评论
 
-22 条历史公开评论继续静态展示；不导入 D1，避免重复。新评论由 Pages Function `functions/api/comments.js` 调用 `worker/comments.mjs`，表结构见 `migrations/0001_comments.sql`。访客以昵称和纯文本提交，新评论进入 `pending`；只有 `approved` 的评论能通过公开接口读取。同一文章不同语言使用同一个文章 ID。前端和服务端使用 Turnstile，服务端检查验证结果的 action 和主机名；提交频率按 IP 的 HMAC 指纹限制，每小时最多 5 条。没有配置时提交按钮保持禁用。
+22 条历史公开评论继续静态展示；不导入 D1，避免重复。新评论由 Pages Function `functions/api/comments.js` 调用 `worker/comments.mjs`，表结构见 `migrations/0001_comments.sql`。访客以昵称和纯文本提交，新评论进入 `pending`；只有 `approved` 的评论能通过公开接口读取。同一文章不同语言使用同一个文章 ID；公开文章增删后运行 `node scripts/generate-comment-post-ids.mjs` 同步评论接口允许的 ID，测试会核对此清单。前端和服务端使用 Turnstile，服务端检查验证结果的 action 和主机名；提交频率按 IP 的 HMAC 指纹限制，每小时最多 5 条。没有配置时提交按钮保持禁用。
 
 **新评论服务尚未部署或验证真实 Cloudflare 资源。** 启用前需在隔离环境准备 D1 数据库并应用表结构，将其绑定为 `COMMENTS_DB`；在 Pages 中安全配置 `COMMENT_SALT` 和 `TURNSTILE_SECRET`、配置 `TURNSTILE_HOSTNAMES`（逗号分隔的精确主机名），并在构建环境设置公开的 `PUBLIC_TURNSTILE_SITEKEY`。同一 widget 和主机名白名单需要覆盖相应的测试地址；将来配置正式域名后再单独加入。密钥不得提交到仓库。启用前还应核对隐私政策、允许的来源、访问频率和真实 Turnstile 验证。
 

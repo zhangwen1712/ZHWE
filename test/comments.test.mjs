@@ -66,3 +66,8 @@ test('Pages Function fails closed when the database binding is absent',async()=>
  const res=await onRequest({request:new Request('https://example.test/api/comments?post=3044'),env:{}});
  assert.equal(res.status,503);assert.equal(res.headers.get('cache-control'),'no-store');
 });
+test('comment post IDs stay in sync with all published posts',async()=>{
+ const {postIds}=await import('../worker/post-ids.mjs');
+ const posts=JSON.parse(readFileSync(new URL('../migration/published-posts.json',import.meta.url),'utf8'));
+ assert.deepEqual(postIds,posts.map(post=>post.id));
+});

@@ -1,5 +1,5 @@
-import posts from '../migration/published-posts.json' with { type: 'json' };
-const ids = new Set(posts.map(post => post.id));
+import { postIds } from './post-ids.mjs';
+const ids = new Set(postIds);
 const headers = { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' };
 const respond = (data, status = 200) => Response.json(data, { status, headers });
 async function fingerprint(ip, secret) {
