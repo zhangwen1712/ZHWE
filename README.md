@@ -25,9 +25,24 @@ ASTRO_TELEMETRY_DISABLED=1 npm run build
 
 ## 评论
 
-历史公开评论静态展示。新评论的 Worker 接口位于 `worker/comments.mjs`，数据表在 `migrations/0001_comments.sql`；评论默认待审核，并具备长度、来源和提交频率检查。接口代码有本地模拟测试。
+22 条历史公开评论继续静态展示；不导入 D1，避免重复。新评论由 Pages Function `functions/api/comments.js` 调用 `worker/comments.mjs`，表结构见 `migrations/0001_comments.sql`。访客以昵称和纯文本提交，新评论进入 `pending`；只有 `approved` 的评论能通过公开接口读取。同一文章不同语言使用同一个文章 ID；公开文章增删后运行 `node scripts/generate-comment-post-ids.mjs` 同步评论接口允许的 ID，测试会核对此清单。前端和服务端使用 Turnstile，服务端检查验证结果的 action 和主机名；提交频率按 IP 的 HMAC 指纹限制，每小时最多 5 条。没有配置时提交按钮保持禁用。
 
-**新评论服务尚未部署或配置**：仍需创建并绑定独立 D1 数据库、配置 `COMMENT_SALT` 密钥和防滥用措施、设置审核操作、验证部署路由及端到端流程。Astro 本地静态预览中提交评论会提示服务未启用。不要在正式站启用前声称评论可用。
+**新评论服务尚未部署或验证真实 Cloudflare 资源。** 启用前需在隔离环境准备 D1 数据库并应用表结构，将其绑定为 `COMMENTS_DB`；在 Pages 中安全配置 `COMMENT_SALT` 和 `TURNSTILE_SECRET`、配置 `TURNSTILE_HOSTNAMES`（逗号分隔的精确主机名），并在构建环境设置公开的 `PUBLIC_TURNSTILE_SITEKEY`。同一 widget 和主机名白名单需要覆盖相应的测试地址；将来配置正式域名后再单独加入。密钥不得提交到仓库。启用前还应核对隐私政策、允许的来源、访问频率和真实 Turnstile 验证。
+
+审核通过经过认证的 `cf` CLI 访问自己的 D1，不提供公开管理接口。将 `COMMENTS_DATABASE_ID` 设置为数据库 UUID 后，可运行：
+
+```sh
+node scripts/comments-admin.mjs list
+node scripts/comments-admin.mjs approve <评论ID>
+node scripts/comments-admin.mjs reject <评论ID>
+node scripts/comments-admin.mjs delete <评论ID>
+node scripts/comments-admin.mjs clear-rate-data
+node scripts/comments-backup.mjs /仓库外的私密目录/评论备份.json
+```
+
+`approve` 和 `reject` 只处理待审核评论；`delete` 删除指定评论。每次仅按站长明确指示执行审核或删除。系统不主动发送通知，站长可让 Codex 查询。限流指纹不保存原始 IP；新评论成功提交时会清理超过 24 小时的指纹，也可使用 `clear-rate-data` 清理静默期间残留的数据；要保证最长期限需配置定时维护，目前尚未配置。
+
+备份命令只写仓库外尚不存在的文件，权限为 `0600`，包含待审核和已拒绝内容但不包含限流指纹；输出或传输时仍需保护隐私。导出期间并发的审核或删除可能使内容不是同一时刻的快照；部署后应验证恢复流程并设置定期备份，当前尚未设置定时任务。删除数据库中的评论不会自动删除已有备份中的副本。
 
 当前网站仍为开发预览：外部失效图片、复杂区块、原有页面交互、SEO、移动端及历史内容需要继续核对；预览页面保留 `noindex`。正式域名切换前需完成内容对账、功能测试与回滚方案。
 

@@ -102,3 +102,32 @@ test('graduation post links to the preserved first program across languages',asy
  await expect(page.locator('img')).toHaveCount(6);
  await expect.poll(()=>page.locator('img').evaluateAll(images=>images.every(img=>img.complete && img.naturalWidth>0))).toBe(true);
 });
+
+test('comment form submits a verified token and renders public comments as text',async({page})=>{
+ let submitted;
+ await page.route('**/zh/2025/06/01/**',async route=>{
+  const response=await route.fetch();
+  const html=(await response.text()).replace('data-sitekey>', 'data-sitekey="local-test-key">');
+  await route.fulfill({response,body:html});
+ });
+ await page.route('https://challenges.cloudflare.com/**',route=>route.fulfill({contentType:'application/javascript',body:`window.turnstile={render:(el,options)=>{setTimeout(()=>options.callback('test-token'),0);return 'widget-1'},reset:()=>{window.testTurnstileReset=true}};`}));
+ await page.route('**/api/comments**',async route=>{
+  if(route.request().method()==='POST'){
+   submitted=route.request().postDataJSON();
+   return route.fulfill({status:202,contentType:'application/json',body:'{"status":"pending"}'});
+  }
+  return route.fulfill({contentType:'application/json',body:JSON.stringify({comments:[{author:'Visitor',body:'<img src=x onerror=alert(1)>'}]})});
+ });
+ await page.goto('/zh/2025/06/01/端午假期/');
+ const comments=page.locator('.comment-form-section');
+ await expect(comments.locator('.live-comments p')).toHaveText('<img src=x onerror=alert(1)>');
+ await expect(comments.locator('.live-comments img')).toHaveCount(0);
+ await comments.locator('input[name="author"]').fill('访客');
+ await comments.locator('textarea[name="body"]').fill('测试评论');
+ const submit=comments.locator('button[type="submit"]');
+ await expect(submit).toBeEnabled();await submit.click();
+ await expect(comments.locator('.comment-status')).toHaveText('评论已提交，审核后显示。');
+ expect(submitted).toEqual({post:3044,author:'访客',body:'测试评论',website:'',token:'test-token'});
+ expect(await page.evaluate(()=>window.testTurnstileReset)).toBe(true);
+ await expect(submit).toBeDisabled();
+});
