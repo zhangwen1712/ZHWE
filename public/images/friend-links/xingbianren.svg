@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="行遍人">
+  <title>行遍人</title>
+  <rect width="128" height="128" rx="28" fill="#E6F2EB"/>
+  <circle cx="64" cy="54" r="34" fill="#2D6E55" opacity=".10"/>
+  <text x="64" y="72" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="49" font-weight="700" fill="#2D6E55">行</text>
+  <text x="64" y="112" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#2D6E55">行遍人</text>
+</svg>

@@ -12,13 +12,14 @@ import categories from '../../migration/categories.json';
 import tags from '../../migration/tags.json';
 import defaultTimeline from '../../migration/milestones.json';
 import {labels,localPath} from '../i18n.js';
+import {localizeFriendLinkImages} from '../lib/friend-link-images.js';
 
 const {kind,item,term,page,lang='zh',localizedPosts=posts,localizedCategories=categories,localizedComments=comments,timeline=defaultTimeline}=Astro.props;
 const t=labels[lang];
 const selected=kind==='pagination'?localizedPosts.slice((page-1)*POSTS_PER_PAGE,page*POSTS_PER_PAGE):kind==='category'?localizedPosts.filter(p=>p.categories.includes(term.id)):kind==='tag'?localizedPosts.filter(p=>p.tags.includes(term.id)):[];
 const html=(item?.content?.rendered || '').replace(/\s(?:srcset|sizes)=(["']).*?\1/gi, '').replace(/https?:\/\/zhwe\.top(?=\/wp-content\/uploads\/)/g, '').replace(/https?:\/\/zhwe\.top\/(?!wp-content\/)/g, '/').replace(/href=(["'])\/(?!wp-content\/|\/)([^"']*)\1/g, (match,q,path)=>`href=${q}${localPath('/'+path,lang)}${q}`);
 const firstProgramOriginal='https://public-file.zhwe.top/university-assignments/01/%E5%9F%BA%E7%A1%80/%E4%BD%9C%E4%B8%9A01/%E5%8D%8E%E4%B8%BA_iPhone/N03.html';
-const renderedHtml=item?.id===1942 ? html.replaceAll(firstProgramOriginal,'/2021/07/09/毕业/first-program/N03.html') : html;
+const renderedHtml=item?.id===345 ? localizeFriendLinkImages(html) : item?.id===1942 ? html.replaceAll(firstProgramOriginal,'/2021/07/09/毕业/first-program/N03.html') : html;
 const translationFallback = item?.translationComplete === false;
 const postComments = item ? (translationFallback ? comments : localizedComments).filter(c => c.post === item.id) : [];
 const fallbackMessage = {en:'This page is shown in Chinese until its translation is complete.',fr:'Cette page est affichée en chinois jusqu’à la fin de sa traduction.',es:'Esta página se muestra en chino hasta que se complete su traducción.',it:'Questa pagina è mostrata in cinese fino al completamento della traduzione.',de:'Diese Seite wird auf Chinesisch angezeigt, bis die Übersetzung abgeschlossen ist.'}[lang];
