@@ -1,5 +1,2 @@
 /pagefind/*
   Cache-Control: no-cache
-
-/2021/07/09/:article/first-program/*
-  X-Robots-Tag: noindex, nofollow

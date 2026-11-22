@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 
 ROOT=Path(__file__).resolve().parent.parent
 DIST=(ROOT/'dist').resolve()
-ORIGIN=os.environ.get('SITE_URL','https://zhwe-blog.pages.dev').rstrip('/')
+ORIGIN=os.environ.get('SITE_URL','https://zhwe.top').rstrip('/')
 LANGUAGES={'en','zh-CN','zh-Hant','fr','es','it','de','x-default'}
 known=set(json.loads((ROOT/'ci/known-missing-internal.json').read_text()))
 missing={}
@@ -59,7 +59,7 @@ for page in files:
         if not href.startswith(ORIGIN+'/'):errors.append(f'{page.relative_to(DIST)}: invalid alternate origin')
         else:check_path(urlsplit(href).path,page)
     robots=soup.find('meta',attrs={'name':'robots'})
-    if not robots or 'noindex' not in robots.get('content','').lower():errors.append(f'{page.relative_to(DIST)}: missing noindex')
+    if not robots or 'noindex' in robots.get('content','').lower() or 'index' not in robots.get('content','').lower():errors.append(f'{page.relative_to(DIST)}: missing index,follow robots meta')
 
 for path in sorted(missing):
     if path not in known:errors.append(f'new missing local link: {path} ({missing[path]} references)')
@@ -74,7 +74,8 @@ try:
             errors.append(f'invalid sitemap URL: {url}');continue
         check_path(urlsplit(url).path,DIST/'index.html')
 except (OSError,ElementTree.ParseError) as exc:errors.append(f'sitemap: {exc}')
-if (DIST/'robots.txt').read_text().strip()!='User-agent: *\nDisallow: /':errors.append('preview robots.txt must disallow crawlers')
+expected_robots=f'User-agent: *\nAllow: /\nSitemap: {ORIGIN}/sitemap.xml\n'
+if (DIST/'robots.txt').read_text()!=expected_robots:errors.append('robots.txt must allow crawlers and point to the sitemap')
 for path in sorted(set(missing)-known):
     msg=f'new missing local link: {path} ({missing[path]} references)'
     if msg not in errors:errors.append(msg)

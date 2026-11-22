@@ -26,11 +26,11 @@ test('each locale has a search page and an article-only build index', async () =
     const search = await read(prefix + 'search/index.html');
     assert.ok(homepage.includes(`href="/${prefix}search/"`), lang);
     assert.ok(search.includes(`<html lang="${lang}"`), lang);
-    assert.ok(search.includes('name="robots" content="noindex,nofollow"'), lang);
+    assert.ok(search.includes('name="robots" content="index,follow"'), lang);
     assert.ok(!search.includes('data-pagefind-body'), lang);
   }
 
-  assert.equal(await read('robots.txt'), 'User-agent: *\nDisallow: /\n');
+  assert.equal(await read('robots.txt'), 'User-agent: *\nAllow: /\nSitemap: https://zhwe.top/sitemap.xml\n');
   assert.match(await read('_headers'), /\/pagefind\/\*\s+Cache-Control: no-cache/);
 });
 
