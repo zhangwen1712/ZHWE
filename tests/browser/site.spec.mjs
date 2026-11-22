@@ -85,3 +85,20 @@ test('article image controls do not show broken buttons without JavaScript',asyn
  await expect(page.locator('.entry-content .lightbox-trigger').first()).toBeHidden();
  await context.close();
 });
+
+test('graduation post links to the preserved first program across languages',async({page})=>{
+ const program='/2021/07/09/毕业/first-program/N03.html';
+ const oldSecond='https://public-file.zhwe.top/university-assignments/%E5%AE%9E%E8%AE%AD/%E6%96%B0%E9%A1%B9%E7%9B%AE%E8%81%94%E6%83%B3/%E8%81%94%E6%83%B3/jsp/index.html';
+ for(const prefix of ['', '/zh', '/zh-Hant', '/fr', '/es', '/it', '/de']){
+  await page.goto(`${prefix}/2021/07/09/毕业/`);
+  await expect(page.locator('.entry-content').locator(`a[href="${program}"]`)).toHaveCount(1);
+  await expect(page.locator('.entry-content').locator(`a[href="${oldSecond}"]`)).toHaveCount(1);
+ }
+ const response=await page.goto(program);
+ expect(response.status()).toBe(200);
+ await expect(page).toHaveTitle('Kai0599');
+ await expect(page.locator('body')).toContainText('Mate30');
+ await expect(page.locator('body')).toContainText('iphone');
+ await expect(page.locator('img')).toHaveCount(6);
+ await expect.poll(()=>page.locator('img').evaluateAll(images=>images.every(img=>img.complete && img.naturalWidth>0))).toBe(true);
+});

@@ -17,6 +17,8 @@ ASTRO_TELEMETRY_DISABLED=1 npm run build
 
 `migration/` 包含已公开的文章、页面、分类、标签、历史评论及媒体清单。WordPress 草稿不放入此公开仓库。原路径保留；`public/wp-content/uploads/` 包含媒体库原文件和正文使用的文件。为减少重复，不保留全部自动生成的缩略图。`migration/assets-manifest.json` 列出已下载文件。
 
+《毕业》中的首个程序保存在 `public/2021/07/09/毕业/first-program/`，`N03.html` 和 6 个图片文件保持原始内容；文章各语言版本指向同一份作品，原 WordPress 导出内容保留原始链接。作品保持原有页面和文案，审核版通过响应头阻止索引。《毕业》中的另一个实训项目并未包含在此次提供的 ZIP 中。
+
 文章中保留的 WordPress 图片放大按钮使用本站的图片查看器，支持键盘关闭；浏览器未启用 JavaScript 时图片仍可正常阅读，放大按钮不显示。
 
 文章正文中有 14 个旧阿里云 OSS 图片链接无法下载；这些链接暂时保留，待从备份恢复后替换。两个大于 25 MiB 的视频需要在 Cloudflare 上使用 R2 等存储，不能直接作为 Workers 静态资源部署。

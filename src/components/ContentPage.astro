@@ -17,6 +17,8 @@ const {kind,item,term,page,lang='zh',localizedPosts=posts,localizedCategories=ca
 const t=labels[lang];
 const selected=kind==='pagination'?localizedPosts.slice((page-1)*POSTS_PER_PAGE,page*POSTS_PER_PAGE):kind==='category'?localizedPosts.filter(p=>p.categories.includes(term.id)):kind==='tag'?localizedPosts.filter(p=>p.tags.includes(term.id)):[];
 const html=(item?.content?.rendered || '').replace(/\s(?:srcset|sizes)=(["']).*?\1/gi, '').replace(/https?:\/\/zhwe\.top(?=\/wp-content\/uploads\/)/g, '').replace(/https?:\/\/zhwe\.top\/(?!wp-content\/)/g, '/').replace(/href=(["'])\/(?!wp-content\/|\/)([^"']*)\1/g, (match,q,path)=>`href=${q}${localPath('/'+path,lang)}${q}`);
+const firstProgramOriginal='https://public-file.zhwe.top/university-assignments/01/%E5%9F%BA%E7%A1%80/%E4%BD%9C%E4%B8%9A01/%E5%8D%8E%E4%B8%BA_iPhone/N03.html';
+const renderedHtml=item?.id===1942 ? html.replaceAll(firstProgramOriginal,'/2021/07/09/毕业/first-program/N03.html') : html;
 const translationFallback = item?.translationComplete === false;
 const postComments = item ? (translationFallback ? comments : localizedComments).filter(c => c.post === item.id) : [];
 const fallbackMessage = {en:'This page is shown in Chinese until its translation is complete.',fr:'Cette page est affichée en chinois jusqu’à la fin de sa traduction.',es:'Esta página se muestra en chino hasta que se complete su traducción.',it:'Questa pagina è mostrata in cinese fino al completamento della traduzione.',de:'Diese Seite wird auf Chinesisch angezeigt, bis die Übersetzung abgeschlossen ist.'}[lang];
@@ -33,7 +35,7 @@ const imageViewerLabels={en:['Enlarge image','Close image'],zh:['放大图片','
         <h1 data-pagefind-meta={kind === 'post' ? 'title' : undefined} set:html={title} />
         {cover && <span hidden data-pagefind-meta="cover[data-cover]" data-cover={cover}></span>}
         {kind === 'post' && <p class="entry-meta" data-pagefind-ignore="all">章文　{new Date(item.date).toLocaleDateString(translationFallback || lang==='zh'?'zh-CN':lang, {year:'numeric',month:'long',day:'numeric'})}</p>}
-        {item.id === 213 ? <Milestones timeline={translationFallback ? defaultTimeline : timeline} lang={translationFallback ? "zh" : lang} /> : <div class:list={["entry-content", {"friend-links": item.id === 345}]} set:html={html}></div>}
+        {item.id === 213 ? <Milestones timeline={translationFallback ? defaultTimeline : timeline} lang={translationFallback ? "zh" : lang} /> : <div class:list={["entry-content", {"friend-links": item.id === 345}]} set:html={renderedHtml}></div>}
       </div>
       {postComments.length > 0 && <section class="comments"><h2>{t.comments}</h2><ol lang={translationFallback ? "zh-CN" : undefined}>{postComments.filter(c => c.parent === 0).map(comment => <Comment comment={comment} comments={postComments} lang={translationFallback ? "zh" : lang} />)}</ol></section>}
       {kind === 'post' && <CommentForm postId={item.id} lang={lang} />}

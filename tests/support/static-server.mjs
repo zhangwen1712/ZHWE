@@ -2,7 +2,7 @@ import http from 'node:http';
 import {readFile, stat} from 'node:fs/promises';
 import {extname, resolve, sep} from 'node:path';
 const root=resolve('dist');
-const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json','.wasm':'application/wasm','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.pf_meta':'application/octet-stream','.pf_index':'application/octet-stream','.pf_fragment':'application/octet-stream'};
+const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json','.wasm':'application/wasm','.svg':'image/svg+xml','.png':'image/png','.gif':'image/gif','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.pf_meta':'application/octet-stream','.pf_index':'application/octet-stream','.pf_fragment':'application/octet-stream'};
 http.createServer(async(req,res)=>{
  try{
   const url=new URL(req.url,'http://127.0.0.1:4177');let pathname=decodeURIComponent(url.pathname);let file=resolve(root,'.'+pathname);
