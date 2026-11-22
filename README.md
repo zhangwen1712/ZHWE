@@ -1,6 +1,6 @@
 # ZHWE
 
-将个人博客从 WordPress 迁移到 Astro、GitHub 与 Cloudflare 的进行中项目。原站尚未切换。
+将个人博客从 WordPress 迁移到 Astro、GitHub 与 Cloudflare 的进行中项目。`zhwe.top` 已绑定 Pages；内容及资源仍在核对。
 
 ## 本地运行
 
@@ -27,7 +27,7 @@ ASTRO_TELEMETRY_DISABLED=1 npm run build
 
 22 条历史公开评论继续静态展示；不导入 D1，避免重复。新评论由 Pages Function `functions/api/comments.js` 调用 `worker/comments.mjs`，表结构见 `migrations/0001_comments.sql`。访客以昵称和纯文本提交，新评论进入 `pending`；只有 `approved` 的评论能通过公开接口读取。同一文章不同语言使用同一个文章 ID；公开文章增删后运行 `node scripts/generate-comment-post-ids.mjs` 同步评论接口允许的 ID，测试会核对此清单。前端和服务端使用 Turnstile，服务端检查验证结果的 action 和主机名；提交频率按 IP 的 HMAC 指纹限制，每小时最多 5 条。没有配置时提交按钮保持禁用。
 
-**新评论服务尚未部署或验证真实 Cloudflare 资源。** 启用前需在隔离环境准备 D1 数据库并应用表结构，将其绑定为 `COMMENTS_DB`；在 Pages 中安全配置 `COMMENT_SALT` 和 `TURNSTILE_SECRET`、配置 `TURNSTILE_HOSTNAMES`（逗号分隔的精确主机名），并在构建环境设置公开的 `PUBLIC_TURNSTILE_SITEKEY`。同一 widget 和主机名白名单需要覆盖相应的测试地址；将来配置正式域名后再单独加入。密钥不得提交到仓库。启用前还应核对隐私政策、允许的来源、访问频率和真实 Turnstile 验证。
+**新评论服务已于 2026-11-22 在 `zhwe.top` 正式环境启用。** 正式 Pages 绑定了独立 D1 数据库 `COMMENTS_DB`，配置了 `COMMENT_SALT`、`TURNSTILE_SECRET`、`TURNSTILE_HOSTNAMES` 和构建变量 `PUBLIC_TURNSTILE_SITEKEY`。Turnstile 真实提交、待审核与状态转换已验证，测试记录已清理；预览环境未绑定正式数据库。密钥不得提交到仓库。更换域名时须同步 Turnstile 主机名和允许名单并重新部署。现有隐私政策仍包含旧 WordPress 评论流程描述，与当前实现不完全一致，需经站长审核后更新。
 
 审核通过经过认证的 `cf` CLI 访问自己的 D1，不提供公开管理接口。将 `COMMENTS_DATABASE_ID` 设置为数据库 UUID 后，可运行：
 
@@ -40,15 +40,15 @@ node scripts/comments-admin.mjs clear-rate-data
 node scripts/comments-backup.mjs /仓库外的私密目录/评论备份.json
 ```
 
-`approve` 和 `reject` 只处理待审核评论；`delete` 删除指定评论。每次仅按站长明确指示执行审核或删除。系统不主动发送通知，站长可让 Codex 查询。限流指纹不保存原始 IP；新评论成功提交时会清理超过 24 小时的指纹，也可使用 `clear-rate-data` 清理静默期间残留的数据；要保证最长期限需配置定时维护，目前尚未配置。
+`approve` 和 `reject` 只处理待审核评论；`delete` 删除指定评论。每次仅按站长明确指示执行审核或删除。系统不主动发送通知，站长可让 Codex 查询。 `zhwe.top/api/comments` 已设为绕过 Cloudflare 缓存并保留 `no-store`；其他页面现有缓存规则未更改。限流指纹不保存原始 IP；新评论成功提交时会清理超过 24 小时的指纹，也可使用 `clear-rate-data` 清理静默期间残留的数据；本机 Codex 已配置每日运行私密备份并清理超过 24 小时的标识；自动化依赖本机运行和 Cloudflare 身份有效。
 
-备份命令只写仓库外尚不存在的文件，权限为 `0600`，包含待审核和已拒绝内容但不包含限流指纹；输出或传输时仍需保护隐私。导出期间并发的审核或删除可能使内容不是同一时刻的快照；部署后应验证恢复流程并设置定期备份，当前尚未设置定时任务。删除数据库中的评论不会自动删除已有备份中的副本。
+备份命令只写仓库外尚不存在的文件，权限为 `0600`，包含待审核和已拒绝内容但不包含限流指纹；输出或传输时仍需保护隐私。导出期间并发的审核或删除可能使内容不是同一时刻的快照；已验证从本地备份恢复到临时内存数据库；Cloudflare D1 完整恢复演练尚未进行。本机 Codex 每日运行备份，电脑不运行或身份失效时可能无法按时执行。删除数据库中的评论不会自动删除已有备份中的副本。
 
-当前网站仍为开发预览：外部失效图片、复杂区块、原有页面交互、SEO、移动端及历史内容需要继续核对；预览页面保留 `noindex`。正式域名切换前需完成内容对账、功能测试与回滚方案。
+站点仍处于迁移审核阶段：外部失效图片、复杂区块、原有页面交互、SEO、移动端及历史内容需要继续核对；页面保留 `noindex`。正式开放收录前需完成内容对账、功能测试与回滚方案。
 
 ## Cloudflare Pages 审核版
 
-使用 `npm run build:pages` 构建，输出目录为 `dist`。由于 Pages 单文件上限为 25 MiB，审核版的两个大视频暂时从原网站加载；GitHub 中保留原文件。评论服务尚未连接，部署静态页面不会启用新评论。审核版保留 noindex，正式切换前需迁移大视频并完成评论、资源和 SEO 校验。
+使用 `npm run build:pages` 构建，输出目录为 `dist`。由于 Pages 单文件上限为 25 MiB，审核版的两个大视频暂时从原网站加载；GitHub 中保留原文件。正式环境已连接评论服务；预览环境未绑定正式评论数据库。审核版保留 noindex，正式切换前需迁移大视频并完成评论、资源和 SEO 校验。
 
 ## 多语言
 
@@ -67,9 +67,9 @@ node scripts/comments-backup.mjs /仓库外的私密目录/评论备份.json
 
 ## 搜索引擎与基础文件
 
-构建会生成 `sitemap.xml` 和 `robots.txt`，并添加站点图标、网页清单、canonical 和多语言 alternate 标签。当前地址默认为 `https://zhwe-blog.pages.dev`；将来自定义域名启用后，应将构建环境变量 `SITE_URL` 设置为正式网站的 HTTPS 源地址（不含路径），重新构建并核查 sitemap 与 canonical。
+构建会生成 `sitemap.xml` 和 `robots.txt`，并添加站点图标、网页清单、canonical 和多语言 alternate 标签。当前地址默认为 `https://zhwe-blog.pages.dev`；自定义域名已绑定，但生产构建尚未配置 `SITE_URL`；开放搜索引擎收录前应按站长指示设置正式 HTTPS 源地址（不含路径），重新构建并核查 sitemap 与 canonical。
 
-审核版页面仍带 `noindex,nofollow`。审核版 robots.txt 禁止爬虫抓取；建立 sitemap 不代表允许收录。正式收录策略应在网站所有者确认后调整。顶层及各语言的 404 页面由 Cloudflare Pages 在路径不存在时返回。
+当前页面仍带 `noindex,nofollow`。审核版 robots.txt 禁止爬虫抓取；建立 sitemap 不代表允许收录。正式收录策略应在网站所有者确认后调整。顶层及各语言的 404 页面由 Cloudflare Pages 在路径不存在时返回。
 
 ## 足迹与显示偏好
 
