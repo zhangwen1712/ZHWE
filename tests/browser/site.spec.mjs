@@ -53,3 +53,35 @@ test('incomplete translations use whole-page original when fallback is implement
  await expect(page.locator('.entry-content h2').first()).toHaveText('周五');
  await expect(page.locator('.single-post')).toContainText('This page is shown in Chinese');
 });
+
+test('article image controls open an accessible viewer on mobile and desktop',async({page})=>{
+ for(const viewport of [{width:390,height:844},{width:1440,height:900}]){
+  await page.setViewportSize(viewport);
+  await page.goto('/zh/2025/04/19/养鱼日记/');
+  const figure=page.locator('.entry-content .wp-lightbox-container').first();
+  const image=figure.locator('img').first();
+  const trigger=figure.getByRole('button',{name:'放大图片'});
+  await expect(trigger).toBeVisible();
+  const bounds=await trigger.boundingBox(),imageBounds=await image.boundingBox();
+  expect(bounds.x).toBeGreaterThanOrEqual(imageBounds.x);
+  expect(bounds.x+bounds.width).toBeLessThanOrEqual(imageBounds.x+imageBounds.width+1);
+  await trigger.click();
+  const dialog=page.getByRole('dialog',{name:'放大图片'});
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator('img')).toHaveAttribute('src',/2024-12-07/);
+  await expect(dialog.getByRole('button',{name:'关闭图片'})).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(dialog).toBeHidden();
+  await expect(trigger).toBeFocused();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
+ }
+});
+
+test('article image controls do not show broken buttons without JavaScript',async({browser})=>{
+ const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844},baseURL:'http://127.0.0.1:4177'});
+ const page=await context.newPage();
+ await page.goto('/zh/2025/04/19/养鱼日记/');
+ await expect(page.locator('.entry-content .wp-lightbox-container img').first()).toBeVisible();
+ await expect(page.locator('.entry-content .lightbox-trigger').first()).toBeHidden();
+ await context.close();
+});
