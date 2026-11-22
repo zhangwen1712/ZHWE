@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="两双筷子">
+  <title>两双筷子</title>
+  <rect width="128" height="128" rx="28" fill="#FFF0DF"/>
+  <circle cx="64" cy="54" r="34" fill="#AA6B2A" opacity=".10"/>
+  <text x="64" y="72" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="49" font-weight="700" fill="#AA6B2A">筷</text>
+  <text x="64" y="112" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#AA6B2A">两双筷子</text>
+</svg>
