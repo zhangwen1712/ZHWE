@@ -131,3 +131,28 @@ test('comment form submits a verified token and renders public comments as text'
  expect(await page.evaluate(()=>window.testTurnstileReset)).toBe(true);
  await expect(submit).toBeDisabled();
 });
+
+for (const scenario of [
+ {name:'saved dark overrides a light system',saved:'dark',system:'light',dark:true},
+ {name:'saved light overrides a dark system',saved:'light',system:'dark',dark:false},
+ {name:'system dark is used without a saved preference',saved:null,system:'dark',dark:true}
+]) test(`theme is correct before styles load: ${scenario.name}`,async({page})=>{
+ await page.emulateMedia({colorScheme:scenario.system});
+ await page.addInitScript(saved=>{
+  localStorage.removeItem('zhwe-dark');
+  if(saved===null)localStorage.removeItem('zhwe-theme');else localStorage.setItem('zhwe-theme',saved);
+ },scenario.saved);
+ for(const path of ['/zh/','/zh/about/']){
+  let resume,notify;
+  const blocked=new Promise(resolve=>resume=resolve);
+  const requested=new Promise(resolve=>notify=resolve);
+  const handler=async route=>{notify();await blocked;await route.continue();};
+  await page.route('**/_astro/*.css',handler);
+  try {
+   await page.goto(path,{waitUntil:'commit'});
+   await requested;
+   await expect.poll(()=>page.evaluate(()=>({dark:document.documentElement.classList.contains('dark-mode'),background:getComputedStyle(document.documentElement).backgroundColor}))).toEqual({dark:scenario.dark,background:scenario.dark?'rgb(30, 28, 37)':'rgb(248, 247, 251)'});
+  } finally {resume();await page.unroute('**/_astro/*.css',handler);}
+  await page.waitForLoadState('load');
+ }
+});
